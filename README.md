@@ -32,10 +32,11 @@ Use Ubuntu 16.04 LTS.
 Compile Monero source (with shared libraries option):
 
     apt-get install git cmake build-essential libssl-dev pkg-config libboost-all-dev
+    apt-get install libreadline-dev libzmq-dev doxygen libsodium-dev
     git clone --recursive https://github.com/monero-project/monero.git
     cd monero
     git checkout tags/v0.14.0.0 -b v0.14.0.0
-    cmake -DBUILD_SHARED_LIBS=1 .
+    cmake -DBUILD_SHARED_LIBS=1 -DMANUAL_SUBMODULES=1 .
     make
 
 Install Golang and required packages:

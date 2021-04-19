@@ -1,0 +1,24 @@
+.DS_Store
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+install_manifest.txt
+*.cmake
+Makefile
+
+# Object files
+*.a
+*.so
+*.dylib
+
+# Configs
+config.json
+testnet.json
+mainnet.json
+
+/build/_workspace/
+/build/bin/
+
+.idea

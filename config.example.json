@@ -1,0 +1,62 @@
+{
+	"address": "YOUR-ADDRESS-NO-EXCHANGE",
+	"bypassAddressValidation": true,
+	"bypassShareValidation": true,
+
+	"threads": 2,
+
+	"estimationWindow": "15m",
+	"luckWindow": "24h",
+	"largeLuckWindow": "72h",
+
+	"blockRefreshInterval": "1s",
+
+	"stratum": {
+		"timeout": "15m",
+
+		"listen": [
+			{
+				"host": "0.0.0.0",
+				"port": 1111,
+				"diff": 8000,
+				"maxConn": 32768
+			},
+			{
+				"host": "0.0.0.0",
+				"port": 3333,
+				"diff": 16000,
+				"maxConn": 32768
+			},
+			{
+				"host": "0.0.0.0",
+				"port": 5555,
+				"diff": 16000,
+				"maxConn": 32768
+			}
+		]
+	},
+
+	"frontend": {
+		"enabled": true,
+		"listen": "0.0.0.0:8082",
+		"login": "admin",
+		"password": "",
+		"hideIP": false
+	},
+
+	"upstreamCheckInterval": "5s",
+
+	"upstream": [
+		{
+			"name": "Main",
+			"host": "127.0.0.1",
+			"port": 18081,
+			"timeout": "10s"
+		}
+	],
+
+	"newrelicEnabled": false,
+	"newrelicName": "MyStratum",
+	"newrelicKey": "SECRET_KEY",
+	"newrelicVerbose": false
+}

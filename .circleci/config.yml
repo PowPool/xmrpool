@@ -1,0 +1,39 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: ubuntu:16.04
+    parallelism: 3
+    resource_class: large
+    working_directory: ~/monero-stratum
+    branches:
+      only:
+        - master
+    steps:
+      - run: |
+          apt-get -qq update
+          apt-get install -y -qq libboost-all-dev curl cmake build-essential libssl-dev git-core libzmq3-dev libsodium-dev
+          curl -O https://dl.google.com/go/go1.11.1.linux-amd64.tar.gz && tar xzvf go1.11.1.linux-amd64.tar.gz
+          echo 'export PATH=~/go/bin:$PATH' >> ~/.bashrc
+      - restore_cache:
+          keys:
+            - v1-monero-{{ arch }}-v0.14.0.0.tar.gz
+      - run: |
+          git clone --recursive --branch v0.14.0.0 --depth 1 https://github.com/monero-project/monero.git ~/monero-0.14.0.0
+          pushd ~/monero-0.14.0.0 && cmake -DBUILD_SHARED_LIBS=1 . && make && popd
+      - save_cache:
+          key: v1-monero-{{ arch }}-v0.14.0.0.tar.gz
+          paths:
+            - ~/monero-0.14.0.0
+      - checkout
+      - run:
+          name: Compile
+          environment:
+            - MONERO_DIR: "~/monero-0.14.0.0"
+          command: |
+            cmake .
+            make
+      - run:
+          name: Test
+          command: build/env.sh go test -v ./...

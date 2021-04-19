@@ -1,0 +1,10 @@
+github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d h1:lBXNCxVENCipq4D1Is42JVOP4eQjlB8TQ6H69Yx5J9Q=
+github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d/go.mod h1:nnjvkQ9ptGaCkuDUx6wNykzzlUixGxvkme+H/lnzb+A=
+github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
+github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
+github.com/yvasiyarov/go-metrics v0.0.0-20150112132944-c25f46c4b940 h1:p7OofyZ509h8DmPLh8Hn+EIIZm/xYhdZHJ9GnXHdr6U=
+github.com/yvasiyarov/go-metrics v0.0.0-20150112132944-c25f46c4b940/go.mod h1:aX5oPXxHm3bOH+xeAttToC8pqch2ScQN/JoXYupl6xs=
+github.com/yvasiyarov/gorelic v0.0.7 h1:4DTF1WOM2ZZS/xMOkTFBOcb6XiHu/PKn3rVo6dbewQE=
+github.com/yvasiyarov/gorelic v0.0.7/go.mod h1:NUSPSUX/bi6SeDMUh6brw0nXpxHnc96TguQh0+r/ssA=
+github.com/yvasiyarov/newrelic_platform_go v0.0.0-20160601141957-9c099fbc30e9 h1:AsFN8kXcCVkUFHyuzp1FtYbzp1nCO/H6+1uPSGEyPzM=
+github.com/yvasiyarov/newrelic_platform_go v0.0.0-20160601141957-9c099fbc30e9/go.mod h1:GlGEuHIJweS1mbCqG+7vt2nvWLzLLnRHbXz5JKd/Qbg=

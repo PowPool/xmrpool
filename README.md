@@ -1,9 +1,9 @@
-# monero-stratum
+# xmrpool
 
 High performance CryptoNote mining stratum with Web-interface written in Golang.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/MiningPool0826/xmrpool)](https://goreportcard.com/report/github.com/MiningPool0826/xmrpool)
-[![CircleCI](https://circleci.com/gh/sammy007/monero-stratum.svg?style=svg)](https://circleci.com/gh/sammy007/monero-stratum)
+[![CircleCI](https://circleci.com/gh/MiningPool0826/xmrpool.svg?style=svg)](https://circleci.com/gh/MiningPool0826/xmrpool)
 
 **Stratum feature list:**
 
@@ -42,17 +42,18 @@ Install Golang and required packages:
 
     sudo apt-get install golang
 
-Clone stratum:
+Clone 
+:
 
     git clone https://github.com/MiningPool0826/xmrpool.git
-    cd monero-stratum
+    cd xmrpool
 
 Build stratum:
 
     MONERO_DIR=/path/to/monero cmake .
     make
 
-`MONERO_DIR=/path/to/monero` is optional, not needed if both `monero` and `monero-stratum` is in the same directory like `/opt/src/`. By default make will search for monero libraries in `../monero`. You can just run `cmake .`.
+`MONERO_DIR=/path/to/monero` is optional, not needed if both `monero` and `xmrpool` is in the same directory like `/opt/src/`. By default make will search for monero libraries in `../monero`. You can just run `cmake .`.
 
 ### Mac OS X
 
@@ -71,7 +72,7 @@ Install Golang and required packages:
 Clone stratum:
 
     git clone https://github.com/MiningPool0826/xmrpool.git
-    cd monero-stratum
+    cd xmrpool
 
 Build stratum:
 
@@ -80,12 +81,12 @@ Build stratum:
 
 ### Running Stratum
 
-    ./build/bin/monero-stratum config.json
+    ./build/bin/xmrpool config.json
 
 If you need to bind to privileged ports and don't want to run from `root`:
 
     sudo apt-get install libcap2-bin
-    sudo setcap 'cap_net_bind_service=+ep' /path/to/monero-stratum
+    sudo setcap 'cap_net_bind_service=+ep' /path/to/xmrpool
 
 ## Configuration
 

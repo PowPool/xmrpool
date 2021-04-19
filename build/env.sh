@@ -14,7 +14,7 @@ ethdir="$workspace/src/github.com/MiningPool0826"
 if [ ! -L "$ethdir/xmrpool" ]; then
     mkdir -p "$ethdir"
     cd "$ethdir"
-    ln -s ../../../../../. monero-stratum
+    ln -s ../../../../../. xmrpool
     cd "$root"
 fi
 

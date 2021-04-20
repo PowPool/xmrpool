@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -15,7 +17,13 @@ import (
 
 	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
-	"github.com/yvasiyarov/gorelic"
+)
+
+var (
+	LatestTag           = ""
+	LatestTagCommitSHA1 = ""
+	LatestCommitSHA1    = ""
+	BuildTime           = ""
 )
 
 var cfg pool.Config
@@ -53,16 +61,16 @@ func startFrontend(cfg *pool.Config, s *stratum.StratumServer) {
 	}
 }
 
-func startNewrelic() {
-	// Run NewRelic
-	if cfg.NewrelicEnabled {
-		nr := gorelic.NewAgent()
-		nr.Verbose = cfg.NewrelicVerbose
-		nr.NewrelicLicense = cfg.NewrelicKey
-		nr.NewrelicName = cfg.NewrelicName
-		nr.Run()
-	}
-}
+//func startNewrelic() {
+//	// Run NewRelic
+//	if cfg.NewrelicEnabled {
+//		nr := gorelic.NewAgent()
+//		nr.Verbose = cfg.NewrelicVerbose
+//		nr.NewrelicLicense = cfg.NewrelicKey
+//		nr.NewrelicName = cfg.NewrelicName
+//		nr.Run()
+//	}
+//}
 
 func readConfig(cfg *pool.Config) {
 	configFileName := "config.json"
@@ -83,9 +91,25 @@ func readConfig(cfg *pool.Config) {
 	}
 }
 
+func OptionParse() {
+	var showVer bool
+	flag.BoolVar(&showVer, "v", false, "show build version")
+
+	flag.Parse()
+
+	if showVer {
+		fmt.Printf("Latest Tag: %s\n", LatestTag)
+		fmt.Printf("Latest Tag Commit SHA1: %s\n", LatestTagCommitSHA1)
+		fmt.Printf("Latest Commit SHA1: %s\n", LatestCommitSHA1)
+		fmt.Printf("Build Time: %s\n", BuildTime)
+		os.Exit(0)
+	}
+}
+
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
+	OptionParse()
 	readConfig(&cfg)
-	startNewrelic()
+	//startNewrelic()
 	startStratum()
 }

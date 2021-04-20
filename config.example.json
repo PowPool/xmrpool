@@ -11,6 +11,10 @@
 
 	"blockRefreshInterval": "1s",
 
+	"log": {
+		"logSetLevel": 10
+	},
+
 	"stratum": {
 		"timeout": "15m",
 

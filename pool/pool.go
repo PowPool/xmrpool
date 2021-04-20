@@ -4,6 +4,7 @@ type Config struct {
 	Address                 string     `json:"address"`
 	BypassAddressValidation bool       `json:"bypassAddressValidation"`
 	BypassShareValidation   bool       `json:"bypassShareValidation"`
+	Log                     Log        `json:"log"`
 	Stratum                 Stratum    `json:"stratum"`
 	BlockRefreshInterval    string     `json:"blockRefreshInterval"`
 	UpstreamCheckInterval   string     `json:"upstreamCheckInterval"`
@@ -44,4 +45,8 @@ type Frontend struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
 	HideIP   bool   `json:"hideIP"`
+}
+
+type Log struct {
+	LogSetLevel int `json:"logSetLevel"`
 }

@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
-	"strings"
 	"syscall"
 	"time"
 
@@ -125,7 +124,7 @@ func decryptPoolConfigure(cfg *pool.Config, passBytes []byte) error {
 	if err != nil {
 		return err
 	}
-	cfg.Address = strings.ToLower(string(b))
+	cfg.Address = string(b)
 
 	// check address
 	if !ValidateAddress(cfg.Address, cfg.Address) {

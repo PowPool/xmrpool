@@ -55,18 +55,26 @@ type JSONRpcResp struct {
 
 func NewRPCClient(cfg *pool.Upstream) (*RPCClient, error) {
 	rawUrl := fmt.Sprintf("http://%s:%v/json_rpc", cfg.Host, cfg.Port)
-	if len(cfg.RpcLogin) != 0 && len(cfg.RpcPass) != 0 {
-		rawUrl = fmt.Sprintf("http://%s:%s@%s:%v/json_rpc",
-			cfg.RpcLogin, cfg.RpcPass, cfg.Host, cfg.Port)
-	}
-	url, err := url.Parse(rawUrl)
+	_url, err := url.Parse(rawUrl)
 	if err != nil {
 		return nil, err
 	}
-	rpcClient := &RPCClient{Name: cfg.Name, Url: url}
+	rpcClient := &RPCClient{Name: cfg.Name, Url: _url}
 	timeout, _ := time.ParseDuration(cfg.Timeout)
-	rpcClient.client = &http.Client{
-		Timeout: timeout,
+	if len(cfg.RpcLogin) != 0 && len(cfg.RpcPass) != 0 {
+		rpcClient.client = &http.Client{
+			Transport: &http.Transport{
+				Proxy: func(req *http.Request) (*url.URL, error) {
+					req.SetBasicAuth(cfg.RpcLogin, cfg.RpcPass)
+					return nil, nil
+				},
+			},
+			Timeout: timeout,
+		}
+	} else {
+		rpcClient.client = &http.Client{
+			Timeout: timeout,
+		}
 	}
 	return rpcClient, nil
 }

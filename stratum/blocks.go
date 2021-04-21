@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	"log"
 	"math/big"
 
 	"github.com/MiningPool0826/xmrpool/cnutil"
+	. "github.com/MiningPool0826/xmrpool/util"
 )
 
 type BlockTemplate struct {
@@ -35,7 +35,7 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 	r := s.rpc()
 	reply, err := r.GetBlockTemplate(8, s.config.Address)
 	if err != nil {
-		log.Printf("Error while refreshing block template: %s", err)
+		Error.Printf("Error while refreshing block template: %s", err)
 		return false
 	}
 	t := s.currentBlockTemplate()
@@ -43,12 +43,12 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 	if t != nil && t.prevHash == reply.PrevHash {
 		// Fallback to height comparison
 		if len(reply.PrevHash) == 0 && reply.Height > t.height {
-			log.Printf("New block to mine on %s at height %v, diff: %v", r.Name, reply.Height, reply.Difficulty)
+			Info.Printf("New block to mine on %s at height %v, diff: %v", r.Name, reply.Height, reply.Difficulty)
 		} else {
 			return false
 		}
 	} else {
-		log.Printf("New block to mine on %s at height %v, diff: %v, prev_hash: %s", r.Name, reply.Height, reply.Difficulty, reply.PrevHash)
+		Info.Printf("New block to mine on %s at height %v, diff: %v, prev_hash: %s", r.Name, reply.Height, reply.Difficulty, reply.PrevHash)
 	}
 	newTemplate := BlockTemplate{
 		diffInt64:      reply.Difficulty,

@@ -1,7 +1,10 @@
 package pool
 
+import "github.com/MiningPool0826/xmrpool/storage"
+
 type Config struct {
-	Address                 string     `json:"address"`
+	AddressEncrypted        string     `json:"addressEncrypted"`
+	Address                 string     `json:"-"`
 	BypassAddressValidation bool       `json:"bypassAddressValidation"`
 	BypassShareValidation   bool       `json:"bypassShareValidation"`
 	Log                     Log        `json:"log"`
@@ -14,10 +17,14 @@ type Config struct {
 	LargeLuckWindow         string     `json:"largeLuckWindow"`
 	Threads                 int        `json:"threads"`
 	Frontend                Frontend   `json:"frontend"`
-	NewrelicName            string     `json:"newrelicName"`
-	NewrelicKey             string     `json:"newrelicKey"`
-	NewrelicVerbose         bool       `json:"newrelicVerbose"`
-	NewrelicEnabled         bool       `json:"newrelicEnabled"`
+
+	Redis         storage.Config         `json:"redis"`
+	RedisFailover storage.ConfigFailover `json:"redisFailover"`
+
+	NewrelicName    string `json:"newrelicName"`
+	NewrelicKey     string `json:"newrelicKey"`
+	NewrelicVerbose bool   `json:"newrelicVerbose"`
+	NewrelicEnabled bool   `json:"newrelicEnabled"`
 }
 
 type Stratum struct {

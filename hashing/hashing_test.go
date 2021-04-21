@@ -1,14 +1,16 @@
 package hashing
 
-import "testing"
-import "log"
+import (
+	"fmt"
+	"testing"
+)
 import "encoding/hex"
 
 func TestHash(t *testing.T) {
 	blob, _ := hex.DecodeString("a1009091e4aa05ff5fe4801727ed0c1b8b339e1a0054d75568fec6ba9c4346e88b10d59edbf6858b2b00008a63b2865b65b84d28bb31feb057b16a21e2eda4bf6cc6377e3310af04debe4a01")
 	hashBytes := Hash(blob, false, 0)
 	hash := hex.EncodeToString(hashBytes)
-	log.Println(hash)
+	fmt.Println(hash)
 
 	expectedHash := "9d38ea4c527970fee1c4f89272a6fb787de71fc95bba7592eaed6e20b7f7478e"
 
@@ -21,7 +23,7 @@ func TestHash_fast(t *testing.T) {
 	blob, _ := hex.DecodeString("01009091e4aa05ff5fe4801727ed0c1b8b339e1a0054d75568fec6ba9c4346e88b10d59edbf6858b2b00008a63b2865b65b84d28bb31feb057b16a21e2eda4bf6cc6377e3310af04debe4a01")
 	hashBytes := Hash(blob, true, 0)
 	hash := hex.EncodeToString(hashBytes)
-	log.Println(hash)
+	fmt.Println(hash)
 
 	expectedHash := "7591f4d8ff9d86ea44873e89a5fb6f380f4410be6206030010567ac9d0d4b0e1"
 
@@ -34,7 +36,7 @@ func TestFastHash(t *testing.T) {
 	blob, _ := hex.DecodeString("01009091e4aa05ff5fe4801727ed0c1b8b339e1a0054d75568fec6ba9c4346e88b10d59edbf6858b2b00008a63b2865b65b84d28bb31feb057b16a21e2eda4bf6cc6377e3310af04debe4a01")
 	hashBytes := FastHash(blob)
 	hash := hex.EncodeToString(hashBytes)
-	log.Println(hash)
+	fmt.Println(hash)
 
 	expectedHash := "8706c697d9fc8a48b14ea93a31c6f0750c48683e585ec1a534e9c57c97193fa6"
 

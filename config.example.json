@@ -1,9 +1,9 @@
 {
-	"address": "YOUR-ADDRESS-NO-EXCHANGE",
+	"addressEncrypted": "YOUR-ADDRESS-NO-EXCHANGE-ENCRYPTED",
 	"bypassAddressValidation": true,
 	"bypassShareValidation": true,
 
-	"threads": 2,
+	"threads": 4,
 
 	"estimationWindow": "15m",
 	"luckWindow": "24h",
@@ -58,6 +58,23 @@
 			"timeout": "10s"
 		}
 	],
+
+	"redis": {
+		"enabled": false,
+		"endpoint": "r-2vc5ktn9a57ddvvo6r.redis.cn-chengdu.rds.aliyuncs.com:6379",
+		"poolSize": 10,
+		"database": 0,
+		"passwordEncrypted": ""
+	},
+
+	"redisFailover": {
+		"enabled": true,
+		"masterName": "mymaster",
+		"sentinelEndpoints": ["192.168.224.205:26379", "192.168.224.215:26379", "192.168.224.139:26379"],
+		"poolSize": 10,
+		"database": 0,
+		"passwordEncrypted": ""
+	},
 
 	"newrelicEnabled": false,
 	"newrelicName": "MyStratum",

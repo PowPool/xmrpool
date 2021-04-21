@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"math/big"
 	"net"
 	"sync"
@@ -16,6 +15,7 @@ import (
 	"github.com/MiningPool0826/xmrpool/pool"
 	"github.com/MiningPool0826/xmrpool/rpc"
 	"github.com/MiningPool0826/xmrpool/util"
+	. "github.com/MiningPool0826/xmrpool/util"
 )
 
 type StratumServer struct {
@@ -71,13 +71,13 @@ func NewStratum(cfg *pool.Config) *StratumServer {
 	for i, v := range cfg.Upstream {
 		client, err := rpc.NewRPCClient(&v)
 		if err != nil {
-			log.Fatal(err)
+			Error.Fatal(err)
 		} else {
 			stratum.upstreams[i] = client
-			log.Printf("Upstream: %s => %s", client.Name, client.Url)
+			Info.Printf("Upstream: %s => %s", client.Name, client.Url)
 		}
 	}
-	log.Printf("Default upstream: %s => %s", stratum.rpc().Name, stratum.rpc().Url)
+	Info.Printf("Default upstream: %s => %s", stratum.rpc().Name, stratum.rpc().Url)
 
 	stratum.miners = NewMinersMap()
 	stratum.sessions = make(map[*Session]struct{})
@@ -95,7 +95,7 @@ func NewStratum(cfg *pool.Config) *StratumServer {
 
 	refreshIntv, _ := time.ParseDuration(cfg.BlockRefreshInterval)
 	refreshTimer := time.NewTimer(refreshIntv)
-	log.Printf("Set block refresh every %v", refreshIntv)
+	Info.Printf("Set block refresh every %v", refreshIntv)
 
 	checkIntv, _ := time.ParseDuration(cfg.UpstreamCheckInterval)
 	checkTimer := time.NewTimer(checkIntv)
@@ -133,7 +133,7 @@ func NewStratum(cfg *pool.Config) *StratumServer {
 				poll := func(v *rpc.RPCClient) {
 					_, err := v.UpdateInfo()
 					if err != nil {
-						log.Printf("Unable to update info on upstream %s: %v", v.Name, err)
+						Error.Printf("Unable to update info on upstream %s: %v", v.Name, err)
 					}
 				}
 				current := stratum.rpc()
@@ -160,7 +160,7 @@ func NewEndpoint(cfg *pool.Port) *Endpoint {
 	e.instanceId = make([]byte, 4)
 	_, err := rand.Read(e.instanceId)
 	if err != nil {
-		log.Fatalf("Can't seed with random bytes: %v", err)
+		Error.Fatalf("Can't seed with random bytes: %v", err)
 	}
 	e.targetHex = util.GetTargetHex(e.config.Difficulty)
 	e.difficulty = big.NewInt(e.config.Difficulty)
@@ -182,15 +182,15 @@ func (e *Endpoint) Listen(s *StratumServer) {
 	bindAddr := fmt.Sprintf("%s:%d", e.config.Host, e.config.Port)
 	addr, err := net.ResolveTCPAddr("tcp", bindAddr)
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		Error.Fatalf("Error: %v", err)
 	}
 	server, err := net.ListenTCP("tcp", addr)
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		Error.Fatalf("Error: %v", err)
 	}
 	defer server.Close()
 
-	log.Printf("Stratum listening on %s", bindAddr)
+	Info.Printf("Stratum listening on %s", bindAddr)
 	accept := make(chan int, e.config.MaxConn)
 	n := 0
 
@@ -219,13 +219,13 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 	for {
 		data, isPrefix, err := connbuff.ReadLine()
 		if isPrefix {
-			log.Println("Socket flood detected from", cs.ip)
+			Info.Println("Socket flood detected from", cs.ip)
 			break
 		} else if err == io.EOF {
-			log.Println("Client disconnected", cs.ip)
+			Info.Println("Client disconnected", cs.ip)
 			break
 		} else if err != nil {
-			log.Println("Error reading:", err)
+			Error.Println("Error reading:", err)
 			break
 		}
 
@@ -235,7 +235,7 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 			var req JSONRpcReq
 			err = json.Unmarshal(data, &req)
 			if err != nil {
-				log.Printf("Malformed request from %s: %v", cs.ip, err)
+				Error.Printf("Malformed request from %s: %v", cs.ip, err)
 				break
 			}
 			s.setDeadline(cs.conn)
@@ -252,11 +252,11 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq) error {
 	if req.Id == nil {
 		err := fmt.Errorf("Server disconnect request")
-		log.Println(err)
+		Error.Println(err)
 		return err
 	} else if req.Params == nil {
 		err := fmt.Errorf("Server RPC request params")
-		log.Println(err)
+		Error.Println(err)
 		return err
 	}
 
@@ -267,7 +267,7 @@ func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq)
 		var params LoginParams
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
-			log.Println("Unable to parse params")
+			Error.Println("Unable to parse params")
 			return err
 		}
 		reply, errReply := s.handleLoginRPC(cs, &params)
@@ -279,7 +279,7 @@ func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq)
 		var params GetJobParams
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
-			log.Println("Unable to parse params")
+			Error.Println("Unable to parse params")
 			return err
 		}
 		reply, errReply := s.handleGetJobRPC(cs, &params)
@@ -291,7 +291,7 @@ func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq)
 		var params SubmitParams
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
-			log.Println("Unable to parse params")
+			Error.Println("Unable to parse params")
 			return err
 		}
 		reply, errReply := s.handleSubmitRPC(cs, &params)
@@ -380,7 +380,7 @@ func (s *StratumServer) checkUpstreams() {
 	for i, v := range s.upstreams {
 		ok, err := v.Check(8, s.config.Address)
 		if err != nil {
-			log.Printf("Upstream %v didn't pass check: %v", v.Name, err)
+			Error.Printf("Upstream %v didn't pass check: %v", v.Name, err)
 		}
 		if ok && !backup {
 			candidate = int32(i)
@@ -389,7 +389,7 @@ func (s *StratumServer) checkUpstreams() {
 	}
 
 	if s.upstream != candidate {
-		log.Printf("Switching to %v upstream", s.upstreams[candidate].Name)
+		Info.Printf("Switching to %v upstream", s.upstreams[candidate].Name)
 		atomic.StoreInt32(&s.upstream, candidate)
 	}
 }

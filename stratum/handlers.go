@@ -1,12 +1,12 @@
 package stratum
 
 import (
-	"log"
 	"regexp"
 	"strings"
 	"sync/atomic"
 
 	"github.com/MiningPool0826/xmrpool/util"
+	. "github.com/MiningPool0826/xmrpool/util"
 )
 
 var noncePattern *regexp.Regexp
@@ -20,7 +20,7 @@ func init() {
 func (s *StratumServer) handleLoginRPC(cs *Session, params *LoginParams) (*JobReply, *ErrorReply) {
 	address, id := extractWorkerId(params.Login)
 	if !s.config.BypassAddressValidation && !util.ValidateAddress(address, s.config.Address) {
-		log.Printf("Invalid address %s used for login by %s", address, cs.ip)
+		Error.Printf("Invalid address %s used for login by %s", address, cs.ip)
 		return nil, &ErrorReply{Code: -1, Message: "Invalid address used for login"}
 	}
 
@@ -35,7 +35,7 @@ func (s *StratumServer) handleLoginRPC(cs *Session, params *LoginParams) (*JobRe
 		s.registerMiner(miner)
 	}
 
-	log.Printf("Miner connected %s@%s", id, cs.ip)
+	Info.Printf("Miner connected %s@%s", id, cs.ip)
 
 	s.registerSession(cs)
 	miner.heartbeat()
@@ -80,7 +80,8 @@ func (s *StratumServer) handleSubmitRPC(cs *Session, params *SubmitParams) (*Sta
 
 	t := s.currentBlockTemplate()
 	if job.height != t.height {
-		log.Printf("Stale share for height %d from %s@%s", job.height, miner.id, cs.ip)
+		Error.Printf("Stale share for height %d from %s@%s", job.height, miner.id, cs.ip)
+		ShareLog.Printf("Stale share for height %d from %s@%s", job.height, miner.id, cs.ip)
 		atomic.AddInt64(&miner.staleShares, 1)
 		return nil, &ErrorReply{Code: -1, Message: "Block expired"}
 	}
@@ -93,7 +94,7 @@ func (s *StratumServer) handleSubmitRPC(cs *Session, params *SubmitParams) (*Sta
 }
 
 func (s *StratumServer) handleUnknownRPC(req *JSONRpcReq) *ErrorReply {
-	log.Printf("Unknown RPC method: %v", req)
+	Error.Printf("Unknown RPC method: %v", req)
 	return &ErrorReply{Code: -1, Message: "Invalid method"}
 }
 
@@ -105,7 +106,7 @@ func (s *StratumServer) broadcastNewJobs() {
 	s.sessionsMu.RLock()
 	defer s.sessionsMu.RUnlock()
 	count := len(s.sessions)
-	log.Printf("Broadcasting new jobs to %d miners", count)
+	Info.Printf("Broadcasting new jobs to %d miners", count)
 	bcast := make(chan int, 1024*16)
 	n := 0
 
@@ -117,7 +118,7 @@ func (s *StratumServer) broadcastNewJobs() {
 			err := cs.pushMessage("job", &reply)
 			<-bcast
 			if err != nil {
-				log.Printf("Job transmit error to %s: %v", cs.ip, err)
+				Error.Printf("Job transmit error to %s: %v", cs.ip, err)
 				s.removeSession(cs)
 			} else {
 				s.setDeadline(cs.conn)

@@ -21,7 +21,7 @@ High performance CryptoNote mining stratum with Web-interface written in Golang.
 
 Dependencies:
 
-  * go-1.6
+  * go-1.15
   * Everything required to build Monero
   * Monero >= **v0.14.0.0** (sometimes `master` branch required)
 
@@ -51,8 +51,10 @@ Clone
 
 Build stratum:
 
-    MONERO_DIR=/path/to/monero cmake .
+    export MONERO_DIR=[path_of_monero] 
+    cmake .
     make
+    make -f Makefile_build_info
 
 `MONERO_DIR=/path/to/monero` is optional, not needed if both `monero` and `xmrpool` is in the same directory like `/opt/src/`. By default make will search for monero libraries in `../monero`. You can just run `cmake .`.
 

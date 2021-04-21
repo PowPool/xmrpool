@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	"log"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -13,6 +12,7 @@ import (
 	"github.com/MiningPool0826/xmrpool/cnutil"
 	"github.com/MiningPool0826/xmrpool/hashing"
 	"github.com/MiningPool0826/xmrpool/util"
+	. "github.com/MiningPool0826/xmrpool/util"
 )
 
 type Job struct {
@@ -156,14 +156,16 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	}
 
 	if !s.config.BypassShareValidation && hex.EncodeToString(hashBytes) != result {
-		log.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
+		Error.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
+		ShareLog.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
 	}
 
 	hashDiff, ok := util.GetHashDifficulty(hashBytes)
 	if !ok {
-		log.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
+		Error.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
+		ShareLog.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
 	}
@@ -174,7 +176,8 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 		if err != nil {
 			atomic.AddInt64(&m.rejects, 1)
 			atomic.AddInt64(&r.Rejects, 1)
-			log.Printf("Block rejected at height %d: %v", t.height, err)
+			Error.Printf("Block rejected at height %d: %v", t.height, err)
+			BlockLog.Printf("Block rejected at height %d: %v", t.height, err)
 		} else {
 			if len(convertedBlob) == 0 {
 				convertedBlob = cnutil.ConvertBlob(shareBuff)
@@ -189,13 +192,15 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 			atomic.AddInt64(&m.accepts, 1)
 			atomic.AddInt64(&r.Accepts, 1)
 			atomic.StoreInt64(&r.LastSubmissionAt, now)
-			log.Printf("Block %s found at height %d by miner %v@%v with ratio %.4f", blockFastHash[0:6], t.height, m.id, cs.ip, ratio)
+			Info.Printf("Block %s found at height %d by miner %v@%v with ratio %.4f", blockFastHash[0:6], t.height, m.id, cs.ip, ratio)
+			BlockLog.Printf("Block %s found at height %d by miner %v@%v with ratio %.4f", blockFastHash[0:6], t.height, m.id, cs.ip, ratio)
 
 			// Immediately refresh current BT and send new jobs
 			s.refreshBlockTemplate(true)
 		}
 	} else if hashDiff.Cmp(cs.endpoint.difficulty) < 0 {
-		log.Printf("Rejected low difficulty share of %v from %v@%v", hashDiff, m.id, cs.ip)
+		Error.Printf("Rejected low difficulty share of %v from %v@%v", hashDiff, m.id, cs.ip)
+		ShareLog.Printf("Rejected low difficulty share of %v from %v@%v", hashDiff, m.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
 	}
@@ -203,6 +208,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	atomic.AddInt64(&s.roundShares, cs.endpoint.config.Difficulty)
 	atomic.AddInt64(&m.validShares, 1)
 	m.storeShare(cs.endpoint.config.Difficulty)
-	log.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
+	Info.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
+	ShareLog.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
 	return true
 }

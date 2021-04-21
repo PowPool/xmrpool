@@ -23,12 +23,12 @@ type RPCClient struct {
 	LastSubmissionAt int64
 	FailsCount       int64
 	Url              *url.URL
-	login            string
-	password         string
-	Name             string
-	sick             bool
-	client           *http.Client
-	info             atomic.Value
+	//login            string
+	//password         string
+	Name   string
+	sick   bool
+	client *http.Client
+	info   atomic.Value
 }
 
 type GetBlockTemplateReply struct {
@@ -104,7 +104,7 @@ func (r *RPCClient) doPost(url, method string, params interface{}) (*JSONRpcResp
 	req.Header.Set("Content-Length", (string)(len(data)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.SetBasicAuth(r.login, r.password)
+	//req.SetBasicAuth(r.login, r.password)
 	resp, err := r.client.Do(req)
 	if err != nil {
 		r.markSick()

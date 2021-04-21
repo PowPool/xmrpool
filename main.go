@@ -5,12 +5,14 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/storage"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"syscall"
 	"time"
@@ -32,6 +34,7 @@ var (
 )
 
 var cfg pool.Config
+var backend *storage.RedisClient = nil
 
 func startStratum() {
 	if cfg.Threads > 0 {
@@ -188,6 +191,29 @@ func main() {
 	if err != nil {
 		Error.Fatal("Decrypt Pool Configure error: ", err.Error())
 	}
+
+	if cfg.Redis.Enabled {
+		backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin)
+	} else if cfg.RedisFailover.Enabled {
+		backend = storage.NewRedisFailoverClient(&cfg.RedisFailover, cfg.Coin)
+	}
+
+	if backend == nil {
+		Error.Fatal("Backend is Nil: maybe redis/redisFailover config is invalid")
+	}
+
+	pong, err := backend.Check()
+	if err != nil {
+		Error.Printf("Can't establish connection to backend: %v", err)
+	} else {
+		Info.Printf("Backend check reply: %v", pong)
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			Error.Println(string(debug.Stack()))
+		}
+	}()
 
 	//startNewrelic()
 	startStratum()

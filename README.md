@@ -79,8 +79,10 @@ Clone stratum:
 
 Build stratum:
 
-    MONERO_DIR=/path/to/monero cmake .
+    MONERO_DIR=[path_of_monero]  
+    cmake .
     make
+    make -f Makefile_build_info
 
 ### Running Stratum
 

@@ -116,6 +116,17 @@ func NewRedisClient(cfg *Config, prefix string) *RedisClient {
 	return &RedisClient{client: client, prefix: prefix}
 }
 
+func NewRedisFailoverClient(cfg *ConfigFailover, prefix string) *RedisClient {
+	client := redis.NewFailoverClient(&redis.FailoverOptions{
+		MasterName:    cfg.MasterName,
+		SentinelAddrs: cfg.SentinelEndpoints,
+		Password:      cfg.Password,
+		DB:            cfg.Database,
+		PoolSize:      cfg.PoolSize,
+	})
+	return &RedisClient{client: client, prefix: prefix}
+}
+
 func (r *RedisClient) Client() *redis.Client {
 	return r.client
 }

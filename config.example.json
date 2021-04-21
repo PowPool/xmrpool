@@ -1,9 +1,10 @@
 {
-	"addressEncrypted": "YOUR-ADDRESS-NO-EXCHANGE-ENCRYPTED",
+	"addressEncrypted": "u5xWHBdpIZa82EnF42Mj8Uo0BsjtmEzGtvN/FFwTnbsCucu3ujtszqH9jYGpOoGdhs6MhT/JwMi/rg2cXmUxeQYXzYmFgve3C5t1qPN2MFDYhrEFXF00ZMOt79DYIlng",
 	"bypassAddressValidation": true,
 	"bypassShareValidation": true,
 
 	"threads": 4,
+	"coin": "xmr",
 
 	"estimationWindow": "15m",
 	"luckWindow": "24h",
@@ -54,21 +55,31 @@
 		{
 			"name": "Main",
 			"host": "127.0.0.1",
-			"port": 18081,
-			"timeout": "10s"
+			"port": 11111,
+			"timeout": "3s",
+			"rpcLogin": "a",
+			"rpcPass": "b"
+		},
+		{
+			"name": "Backup",
+			"host": "127.0.0.1",
+			"port": 11111,
+			"timeout": "3s",
+			"rpcLogin": "a",
+			"rpcPass": "b"
 		}
 	],
 
 	"redis": {
-		"enabled": false,
-		"endpoint": "r-2vc5ktn9a57ddvvo6r.redis.cn-chengdu.rds.aliyuncs.com:6379",
+		"enabled": true,
+		"endpoint": "127.0.0.1:6379",
 		"poolSize": 10,
 		"database": 0,
-		"passwordEncrypted": ""
+		"passwordEncrypted": "LKsi0nIJ/i8iNZJChcgDhQ=="
 	},
 
 	"redisFailover": {
-		"enabled": true,
+		"enabled": false,
 		"masterName": "mymaster",
 		"sentinelEndpoints": ["192.168.224.205:26379", "192.168.224.215:26379", "192.168.224.139:26379"],
 		"poolSize": 10,

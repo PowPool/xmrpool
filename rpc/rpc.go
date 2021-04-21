@@ -55,6 +55,10 @@ type JSONRpcResp struct {
 
 func NewRPCClient(cfg *pool.Upstream) (*RPCClient, error) {
 	rawUrl := fmt.Sprintf("http://%s:%v/json_rpc", cfg.Host, cfg.Port)
+	if len(cfg.RpcLogin) != 0 && len(cfg.RpcPass) != 0 {
+		rawUrl = fmt.Sprintf("http://%s:%s@%s:%v/json_rpc",
+			cfg.RpcLogin, cfg.RpcPass, cfg.Host, cfg.Port)
+	}
 	url, err := url.Parse(rawUrl)
 	if err != nil {
 		return nil, err

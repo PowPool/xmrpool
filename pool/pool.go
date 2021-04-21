@@ -18,6 +18,7 @@ type Config struct {
 	Threads                 int        `json:"threads"`
 	Frontend                Frontend   `json:"frontend"`
 
+	Coin          string                 `json:"coin"`
 	Redis         storage.Config         `json:"redis"`
 	RedisFailover storage.ConfigFailover `json:"redisFailover"`
 
@@ -40,10 +41,12 @@ type Port struct {
 }
 
 type Upstream struct {
-	Name    string `json:"name"`
-	Host    string `json:"host"`
-	Port    int    `json:"port"`
-	Timeout string `json:"timeout"`
+	Name     string `json:"name"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Timeout  string `json:"timeout"`
+	RpcLogin string `json:"rpcLogin"`
+	RpcPass  string `json:"rpcPass"`
 }
 
 type Frontend struct {

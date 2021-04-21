@@ -56,17 +56,13 @@
 			"name": "Main",
 			"host": "192.168.1.124",
 			"port": 21111,
-			"timeout": "3s",
-			"rpcLogin": "a",
-			"rpcPass": "b"
+			"timeout": "3s"
 		},
 		{
 			"name": "Backup",
 			"host": "192.168.1.124",
 			"port": 21111,
-			"timeout": "3s",
-			"rpcLogin": "a",
-			"rpcPass": "b"
+			"timeout": "3s"
 		}
 	],
 

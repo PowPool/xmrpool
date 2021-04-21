@@ -41,12 +41,10 @@ type Port struct {
 }
 
 type Upstream struct {
-	Name     string `json:"name"`
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Timeout  string `json:"timeout"`
-	RpcLogin string `json:"rpcLogin"`
-	RpcPass  string `json:"rpcPass"`
+	Name    string `json:"name"`
+	Host    string `json:"host"`
+	Port    int    `json:"port"`
+	Timeout string `json:"timeout"`
 }
 
 type Frontend struct {

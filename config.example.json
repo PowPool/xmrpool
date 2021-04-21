@@ -1,5 +1,5 @@
 {
-	"addressEncrypted": "u5xWHBdpIZa82EnF42Mj8Uo0BsjtmEzGtvN/FFwTnbsCucu3ujtszqH9jYGpOoGdhs6MhT/JwMi/rg2cXmUxeQYXzYmFgve3C5t1qPN2MFDYhrEFXF00ZMOt79DYIlng",
+	"addressEncrypted": "1Wb/b37j1DVulklkzb6TLJ0CL9y3hcos0pMnA4nD++pIkXteeVRtno55uKJrGRp7hWM6cbiS6wRHCDGv3b1CsCEqy4+eXhDHuGbH3ReVtEemMQVUchJvJ1jQu+pqki/c",
 	"bypassAddressValidation": true,
 	"bypassShareValidation": true,
 
@@ -54,16 +54,16 @@
 	"upstream": [
 		{
 			"name": "Main",
-			"host": "127.0.0.1",
-			"port": 11111,
+			"host": "192.168.1.124",
+			"port": 21111,
 			"timeout": "3s",
 			"rpcLogin": "a",
 			"rpcPass": "b"
 		},
 		{
 			"name": "Backup",
-			"host": "127.0.0.1",
-			"port": 11111,
+			"host": "192.168.1.124",
+			"port": 21111,
 			"timeout": "3s",
 			"rpcLogin": "a",
 			"rpcPass": "b"

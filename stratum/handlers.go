@@ -89,7 +89,7 @@ func (s *StratumServer) handleSubmitRPC(cs *Session, params *SubmitParams) (*Sta
 		return nil, &ErrorReply{Code: -1, Message: "Block expired"}
 	}
 
-	validShare := miner.processShare(s, cs, job, t, nonce, params.Result)
+	validShare := miner.processShare(s, cs, job, t, nonce, params.Result, s.hashrateExpiration)
 	if !validShare {
 		return nil, &ErrorReply{Code: -1, Message: "Low difficulty share"}
 	}

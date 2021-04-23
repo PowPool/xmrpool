@@ -132,7 +132,8 @@ func (m *Miner) hashrate(estimationWindow time.Duration) float64 {
 	return float64(totalShares) / float64(boundary)
 }
 
-func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTemplate, nonce string, result string) bool {
+func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTemplate, nonce string, result string,
+	hashrateExpiration time.Duration) bool {
 	r := s.rpc()
 
 	shareBuff := make([]byte, len(t.buffer))
@@ -198,7 +199,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 			atomic.StoreInt64(&r.LastSubmissionAt, now)
 
 			exist, err := s.backend.WriteBlock(cs.login, cs.id, paramIn, cs.endpoint.difficulty.Int64(), t.diffInt64, uint64(t.height),
-				h.CoinBaseValue, h.JobTxsFeeTotal, s.hashrateExpiration)
+				t.blockReward, t.txTotalFee, hashrateExpiration)
 			if exist {
 				ms := MakeTimestamp()
 				ts := ms / 1000
@@ -240,6 +241,9 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	atomic.AddInt64(&s.roundShares, cs.endpoint.config.Difficulty)
 	atomic.AddInt64(&m.validShares, 1)
 	m.storeShare(cs.endpoint.config.Difficulty)
+
+	// TODO
+
 	Info.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
 	ShareLog.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
 	return true

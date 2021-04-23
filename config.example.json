@@ -11,6 +11,7 @@
 	"largeLuckWindow": "72h",
 
 	"blockRefreshInterval": "1s",
+	"hashRateExpiration": "3h",
 
 	"log": {
 		"logSetLevel": 10

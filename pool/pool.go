@@ -15,6 +15,7 @@ type Config struct {
 	EstimationWindow        string     `json:"estimationWindow"`
 	LuckWindow              string     `json:"luckWindow"`
 	LargeLuckWindow         string     `json:"largeLuckWindow"`
+	HashRateExpiration      string     `json:"hashRateExpiration"`
 	Threads                 int        `json:"threads"`
 	Frontend                Frontend   `json:"frontend"`
 

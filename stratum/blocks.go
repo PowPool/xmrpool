@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+	"github.com/MiningPool0826/xmrpool/blocktemplate"
+	"io"
 	"math/big"
 
 	"github.com/MiningPool0826/xmrpool/cnutil"
@@ -17,6 +19,9 @@ type BlockTemplate struct {
 	reservedOffset int
 	prevHash       string
 	buffer         []byte
+
+	blockReward int64
+	txTotalFee  int64
 }
 
 func (b *BlockTemplate) nextBlob(extraNonce uint32, instanceId []byte) string {
@@ -33,7 +38,6 @@ func (b *BlockTemplate) nextBlob(extraNonce uint32, instanceId []byte) string {
 
 func (s *StratumServer) fetchBlockTemplate() bool {
 	r := s.rpc()
-	// TODO need to get expected_reward
 	reply, err := r.GetBlockTemplate(8, s.config.Address)
 	if err != nil {
 		Error.Printf("Error while refreshing block template: %s", err)
@@ -51,7 +55,6 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 	} else {
 		Info.Printf("New block to mine on %s at height %v, diff: %v, prev_hash: %s", r.Name, reply.Height, reply.Difficulty, reply.PrevHash)
 	}
-	// TODO need to get block reward and transaction fees
 	newTemplate := BlockTemplate{
 		diffInt64:      reply.Difficulty,
 		difficulty:     big.NewInt(reply.Difficulty),
@@ -60,6 +63,30 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 		reservedOffset: reply.ReservedOffset,
 	}
 	newTemplate.buffer, _ = hex.DecodeString(reply.Blob)
+
+	// set blockReward and txTotalFee
+	var blockTemplateBlob blocktemplate.BlockTemplateBlob
+	bytesBuf := bytes.NewBuffer(newTemplate.buffer)
+	bufReader := io.Reader(bytesBuf)
+	err = blockTemplateBlob.UnPack(bufReader)
+	if err != nil {
+		Error.Printf("unpack block template blob fail, blob hex string: %s", reply.Blob)
+		return false
+	}
+
+	if len(blockTemplateBlob.Block.MinerTx.Vout) < 1 {
+		Error.Printf("invalid block template blob (Vout count < 1), blob hex string: %s", reply.Blob)
+		return false
+	}
+	newTemplate.blockReward = int64(blockTemplateBlob.Block.MinerTx.Vout[0].Amount)
+
+	if reply.ExpectedReward < newTemplate.blockReward {
+		Error.Printf("invalid block template blob (expectedReward: %d, blockReward: %d), blob hex string: %s",
+			reply.ExpectedReward, newTemplate.blockReward, reply.Blob)
+		return false
+	}
+	newTemplate.txTotalFee = reply.ExpectedReward - newTemplate.blockReward
+
 	s.blockTemplate.Store(&newTemplate)
 	return true
 }

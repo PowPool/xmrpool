@@ -35,7 +35,8 @@ type StratumServer struct {
 	sessionsMu       sync.RWMutex
 	sessions         map[*Session]struct{}
 
-	backend *storage.RedisClient
+	backend            *storage.RedisClient
+	hashrateExpiration time.Duration
 }
 
 type blockEntry struct {
@@ -94,6 +95,9 @@ func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
 
 	estimationWindow, _ := time.ParseDuration(cfg.EstimationWindow)
 	stratum.estimationWindow = estimationWindow
+
+	hashrateExpiration, _ := time.ParseDuration(cfg.HashRateExpiration)
+	stratum.hashrateExpiration = hashrateExpiration
 
 	luckWindow, _ := time.ParseDuration(cfg.LuckWindow)
 	stratum.luckWindow = int64(luckWindow / time.Millisecond)

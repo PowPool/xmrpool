@@ -45,7 +45,7 @@ func startStratum() {
 		Info.Printf("Running with default %v threads", n)
 	}
 
-	s := stratum.NewStratum(&cfg)
+	s := stratum.NewStratum(&cfg, backend)
 	if cfg.Frontend.Enabled {
 		go startFrontend(&cfg, s)
 	}

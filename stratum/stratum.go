@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/storage"
 	"io"
 	"math/big"
 	"net"
@@ -33,6 +34,8 @@ type StratumServer struct {
 	blocksMu         sync.RWMutex
 	sessionsMu       sync.RWMutex
 	sessions         map[*Session]struct{}
+
+	backend *storage.RedisClient
 }
 
 type blockEntry struct {
@@ -53,9 +56,13 @@ type Endpoint struct {
 type Session struct {
 	lastBlockHeight int64
 	sync.Mutex
-	conn      *net.TCPConn
-	enc       *json.Encoder
-	ip        string
+	conn *net.TCPConn
+	enc  *json.Encoder
+	ip   string
+
+	login string
+	id    string
+
 	endpoint  *Endpoint
 	validJobs []*Job
 }
@@ -64,8 +71,8 @@ const (
 	MaxReqSize = 10 * 1024
 )
 
-func NewStratum(cfg *pool.Config) *StratumServer {
-	stratum := &StratumServer{config: cfg, blockStats: make(map[int64]blockEntry)}
+func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
+	stratum := &StratumServer{config: cfg, backend: backend, blockStats: make(map[int64]blockEntry)}
 
 	stratum.upstreams = make([]*rpc.RPCClient, len(cfg.Upstream))
 	for i, v := range cfg.Upstream {

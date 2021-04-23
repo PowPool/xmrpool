@@ -29,6 +29,9 @@ func (s *StratumServer) handleLoginRPC(cs *Session, params *LoginParams) (*JobRe
 		return nil, &ErrorReply{Code: -1, Message: "Job not ready"}
 	}
 
+	cs.login = address
+	cs.id = id
+
 	miner, ok := s.miners.Get(id)
 	if !ok {
 		miner = NewMiner(id, cs.ip)

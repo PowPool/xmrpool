@@ -33,6 +33,7 @@ func (b *BlockTemplate) nextBlob(extraNonce uint32, instanceId []byte) string {
 
 func (s *StratumServer) fetchBlockTemplate() bool {
 	r := s.rpc()
+	// TODO need to get expected_reward
 	reply, err := r.GetBlockTemplate(8, s.config.Address)
 	if err != nil {
 		Error.Printf("Error while refreshing block template: %s", err)
@@ -50,6 +51,7 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 	} else {
 		Info.Printf("New block to mine on %s at height %v, diff: %v, prev_hash: %s", r.Name, reply.Height, reply.Difficulty, reply.PrevHash)
 	}
+	// TODO need to get block reward and transaction fees
 	newTemplate := BlockTemplate{
 		diffInt64:      reply.Difficulty,
 		difficulty:     big.NewInt(reply.Difficulty),

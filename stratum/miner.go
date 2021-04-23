@@ -156,21 +156,25 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	}
 
 	if !s.config.BypassShareValidation && hex.EncodeToString(hashBytes) != result {
-		Error.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
-		ShareLog.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
+		Error.Printf("Bad hash from miner %v.%v@%v", cs.login, cs.id, cs.ip)
+		ShareLog.Printf("Bad hash from miner %v.%v@%v", cs.login, cs.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
 	}
 
 	hashDiff, ok := util.GetHashDifficulty(hashBytes)
 	if !ok {
-		Error.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
-		ShareLog.Printf("Bad hash from miner %v@%v", m.id, cs.ip)
+		Error.Printf("Bad hash from miner %v.%v@%v", cs.login, cs.id, cs.ip)
+		ShareLog.Printf("Bad hash from miner %v.%v@%v", cs.login, cs.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
 	}
 	block := hashDiff.Cmp(t.difficulty) >= 0
 
+	nonceHex := hex.EncodeToString(nonceBuff)
+	instanceIdHex := hex.EncodeToString(cs.endpoint.instanceId)
+	extraHex := hex.EncodeToString(extraBuff.Bytes())
+	paramIn := []string{nonceHex, instanceIdHex, extraHex}
 	if block {
 		_, err := r.SubmitBlock(hex.EncodeToString(shareBuff))
 		if err != nil {
@@ -192,15 +196,43 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 			atomic.AddInt64(&m.accepts, 1)
 			atomic.AddInt64(&r.Accepts, 1)
 			atomic.StoreInt64(&r.LastSubmissionAt, now)
-			Info.Printf("Block %s found at height %d by miner %v@%v with ratio %.4f", blockFastHash[0:6], t.height, m.id, cs.ip, ratio)
-			BlockLog.Printf("Block %s found at height %d by miner %v@%v with ratio %.4f", blockFastHash[0:6], t.height, m.id, cs.ip, ratio)
+
+			exist, err := s.backend.WriteBlock(cs.login, cs.id, paramIn, cs.endpoint.difficulty.Int64(), t.diffInt64, uint64(t.height),
+				h.CoinBaseValue, h.JobTxsFeeTotal, s.hashrateExpiration)
+			if exist {
+				ms := MakeTimestamp()
+				ts := ms / 1000
+
+				err := s.backend.WriteInvalidShare(ms, ts, cs.login, cs.id, cs.endpoint.difficulty.Int64())
+				if err != nil {
+					Error.Println("Failed to insert invalid share data into backend:", err)
+				}
+				return false
+			}
+			if err != nil {
+				Error.Println("Failed to insert block candidate into backend:", err)
+				BlockLog.Println("Failed to insert block candidate into backend:", err)
+			} else {
+				Info.Printf("Inserted block %v to backend", t.height)
+				BlockLog.Printf("Inserted block %v to backend", t.height)
+			}
+
+			Info.Printf("Block %s found at height %d by miner %v.%v@%v with ratio %.4f", blockFastHash[0:6], t.height, cs.login, cs.id, cs.ip, ratio)
+			BlockLog.Printf("Block %s found at height %d by miner %v.%v@%v with ratio %.4f", blockFastHash[0:6], t.height, cs.login, cs.id, cs.ip, ratio)
 
 			// Immediately refresh current BT and send new jobs
 			s.refreshBlockTemplate(true)
 		}
 	} else if hashDiff.Cmp(cs.endpoint.difficulty) < 0 {
-		Error.Printf("Rejected low difficulty share of %v from %v@%v", hashDiff, m.id, cs.ip)
-		ShareLog.Printf("Rejected low difficulty share of %v from %v@%v", hashDiff, m.id, cs.ip)
+		ms := MakeTimestamp()
+		ts := ms / 1000
+		err := s.backend.WriteRejectShare(ms, ts, cs.login, cs.id, cs.endpoint.difficulty.Int64())
+		if err != nil {
+			Error.Println("Failed to insert reject share data into backend:", err)
+			return false
+		}
+		Error.Printf("Rejected low difficulty share of %v from %v.%v@%v", hashDiff, cs.login, cs.id, cs.ip)
+		ShareLog.Printf("Rejected low difficulty share of %v from %v.%v@%v", hashDiff, cs.login, cs.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
 	}

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/pool"
 	"math/big"
 	"strconv"
 	"strings"
@@ -11,25 +12,6 @@ import (
 
 	. "github.com/MiningPool0826/xmrpool/util"
 )
-
-type Config struct {
-	Enabled           bool   `json:"enabled"`
-	Endpoint          string `json:"endpoint"`
-	PasswordEncrypted string `json:"passwordEncrypted"`
-	Password          string `json:"-"`
-	Database          int64  `json:"database"`
-	PoolSize          int    `json:"poolSize"`
-}
-
-type ConfigFailover struct {
-	Enabled           bool     `json:"enabled"`
-	MasterName        string   `json:"masterName"`
-	SentinelEndpoints []string `json:"sentinelEndpoints"`
-	PasswordEncrypted string   `json:"passwordEncrypted"`
-	Password          string   `json:"-"`
-	Database          int64    `json:"database"`
-	PoolSize          int      `json:"poolSize"`
-}
 
 type RedisClient struct {
 	client *redis.Client
@@ -106,7 +88,7 @@ type Worker struct {
 	TotalHR int64 `json:"hr2"`
 }
 
-func NewRedisClient(cfg *Config, prefix string) *RedisClient {
+func NewRedisClient(cfg *pool.StorageConfig, prefix string) *RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Endpoint,
 		Password: cfg.Password,
@@ -116,7 +98,7 @@ func NewRedisClient(cfg *Config, prefix string) *RedisClient {
 	return &RedisClient{client: client, prefix: prefix}
 }
 
-func NewRedisFailoverClient(cfg *ConfigFailover, prefix string) *RedisClient {
+func NewRedisFailoverClient(cfg *pool.StorageConfigFailover, prefix string) *RedisClient {
 	client := redis.NewFailoverClient(&redis.FailoverOptions{
 		MasterName:    cfg.MasterName,
 		SentinelAddrs: cfg.SentinelEndpoints,

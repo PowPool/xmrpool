@@ -1,7 +1,38 @@
 package pool
 
-import "github.com/MiningPool0826/xmrpool/storage"
-import "github.com/MiningPool0826/xmrpool/payouts"
+type StorageConfig struct {
+	Enabled           bool   `json:"enabled"`
+	Endpoint          string `json:"endpoint"`
+	PasswordEncrypted string `json:"passwordEncrypted"`
+	Password          string `json:"-"`
+	Database          int64  `json:"database"`
+	PoolSize          int    `json:"poolSize"`
+}
+
+type StorageConfigFailover struct {
+	Enabled           bool     `json:"enabled"`
+	MasterName        string   `json:"masterName"`
+	SentinelEndpoints []string `json:"sentinelEndpoints"`
+	PasswordEncrypted string   `json:"passwordEncrypted"`
+	Password          string   `json:"-"`
+	Database          int64    `json:"database"`
+	PoolSize          int      `json:"poolSize"`
+}
+
+type UnlockerConfig struct {
+	Enabled        bool    `json:"enabled"`
+	PoolFee        float64 `json:"poolFee"`
+	PoolFeeAddress string  `json:"poolFeeAddress"`
+	Donate         bool    `json:"donate"`
+	Depth          int64   `json:"depth"`
+	ImmatureDepth  int64   `json:"immatureDepth"`
+	KeepTxFees     bool    `json:"keepTxFees"`
+	Interval       string  `json:"interval"`
+	DaemonName     string  `json:"daemonName"`
+	DaemonHost     string  `json:"daemonHost"`
+	DaemonPort     int     `json:"daemonPort"`
+	Timeout        string  `json:"timeout"`
+}
 
 type Config struct {
 	AddressEncrypted        string     `json:"addressEncrypted"`
@@ -25,11 +56,11 @@ type Config struct {
 	Threads  int      `json:"threads"`
 	Frontend Frontend `json:"frontend"`
 
-	Coin          string                 `json:"coin"`
-	Redis         storage.Config         `json:"redis"`
-	RedisFailover storage.ConfigFailover `json:"redisFailover"`
+	Coin          string                `json:"coin"`
+	Redis         StorageConfig         `json:"redis"`
+	RedisFailover StorageConfigFailover `json:"redisFailover"`
 
-	BlockUnlocker payouts.UnlockerConfig `json:"unlocker"`
+	BlockUnlocker UnlockerConfig `json:"unlocker"`
 
 	NewrelicName    string `json:"newrelicName"`
 	NewrelicKey     string `json:"newrelicKey"`

@@ -5,8 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/MiningPool0826/xmrpool/payouts"
-	"github.com/MiningPool0826/xmrpool/storage"
 	"log"
 	"math/rand"
 	"net/http"
@@ -17,13 +15,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/MiningPool0826/xmrpool/pool"
-	"github.com/MiningPool0826/xmrpool/stratum"
-	. "github.com/MiningPool0826/xmrpool/util"
-
 	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/ssh/terminal"
+
+	"github.com/MiningPool0826/xmrpool/payouts"
+	"github.com/MiningPool0826/xmrpool/pool"
+	"github.com/MiningPool0826/xmrpool/storage"
+	"github.com/MiningPool0826/xmrpool/stratum"
+	. "github.com/MiningPool0826/xmrpool/util"
 )
 
 var (

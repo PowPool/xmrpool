@@ -3,6 +3,7 @@ package payouts
 import (
 	"errors"
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/pool"
 	"math/big"
 	"net/http"
 	"net/url"
@@ -14,21 +15,6 @@ import (
 	"github.com/MiningPool0826/xmrpool/storage"
 	. "github.com/MiningPool0826/xmrpool/util"
 )
-
-type UnlockerConfig struct {
-	Enabled        bool    `json:"enabled"`
-	PoolFee        float64 `json:"poolFee"`
-	PoolFeeAddress string  `json:"poolFeeAddress"`
-	Donate         bool    `json:"donate"`
-	Depth          int64   `json:"depth"`
-	ImmatureDepth  int64   `json:"immatureDepth"`
-	KeepTxFees     bool    `json:"keepTxFees"`
-	Interval       string  `json:"interval"`
-	DaemonName     string  `json:"daemonName"`
-	DaemonHost     string  `json:"daemonHost"`
-	DaemonPort     int     `json:"daemonPort"`
-	Timeout        string  `json:"timeout"`
-}
 
 //const minDepth = 16
 //const byzantiumHardForkHeight = 4370000
@@ -43,14 +29,14 @@ const donationFee = 0.0
 const donationAccount = ""
 
 type BlockUnlocker struct {
-	config   *UnlockerConfig
+	config   *pool.UnlockerConfig
 	backend  *storage.RedisClient
 	rpc      *rpc.RPCClient
 	halt     bool
 	lastFail error
 }
 
-func NewBlockUnlocker(cfg *UnlockerConfig, backend *storage.RedisClient) *BlockUnlocker {
+func NewBlockUnlocker(cfg *pool.UnlockerConfig, backend *storage.RedisClient) *BlockUnlocker {
 	if len(cfg.PoolFeeAddress) != 0 && !ValidateAddress(cfg.PoolFeeAddress, cfg.PoolFeeAddress) {
 		Error.Fatalln("Invalid poolFeeAddress", cfg.PoolFeeAddress)
 	}

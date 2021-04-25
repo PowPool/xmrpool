@@ -1,6 +1,7 @@
 package pool
 
 import "github.com/MiningPool0826/xmrpool/storage"
+import "github.com/MiningPool0826/xmrpool/payouts"
 
 type Config struct {
 	AddressEncrypted        string     `json:"addressEncrypted"`
@@ -16,12 +17,19 @@ type Config struct {
 	LuckWindow              string     `json:"luckWindow"`
 	LargeLuckWindow         string     `json:"largeLuckWindow"`
 	HashRateExpiration      string     `json:"hashRateExpiration"`
-	Threads                 int        `json:"threads"`
-	Frontend                Frontend   `json:"frontend"`
+
+	PurgeInterval       string `json:"purgeInterval"`
+	HashrateWindow      string `json:"hashrateWindow"`
+	HashrateLargeWindow string `json:"hashrateLargeWindow"`
+
+	Threads  int      `json:"threads"`
+	Frontend Frontend `json:"frontend"`
 
 	Coin          string                 `json:"coin"`
 	Redis         storage.Config         `json:"redis"`
 	RedisFailover storage.ConfigFailover `json:"redisFailover"`
+
+	BlockUnlocker payouts.UnlockerConfig `json:"unlocker"`
 
 	NewrelicName    string `json:"newrelicName"`
 	NewrelicKey     string `json:"newrelicKey"`

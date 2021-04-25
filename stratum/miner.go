@@ -242,7 +242,19 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	atomic.AddInt64(&m.validShares, 1)
 	m.storeShare(cs.endpoint.config.Difficulty)
 
-	// TODO
+	exist, err := s.backend.WriteShare(cs.login, cs.id, paramIn, cs.endpoint.difficulty.Int64(), uint64(t.height), s.hashrateExpiration)
+	if exist {
+		ms := MakeTimestamp()
+		ts := ms / 1000
+		err := s.backend.WriteInvalidShare(ms, ts, cs.login, cs.id, cs.endpoint.difficulty.Int64())
+		if err != nil {
+			Error.Println("Failed to insert invalid share data into backend:", err)
+		}
+		return false
+	}
+	if err != nil {
+		Error.Println("Failed to insert share data into backend:", err)
+	}
 
 	Info.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
 	ShareLog.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)

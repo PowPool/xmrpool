@@ -7,7 +7,11 @@ import (
 	"unicode/utf8"
 
 	"github.com/MiningPool0826/xmrpool/cnutil"
+	"github.com/ethereum/go-ethereum/common/math"
 )
+
+var Xmr = math.BigPow(10, 12)
+var Satoshi = math.BigPow(10, 0)
 
 var Diff1 = StringToBig("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
 
@@ -60,4 +64,18 @@ func reverse(src []byte) []byte {
 		dst[len(src)-i] = src[i-1]
 	}
 	return dst
+}
+
+func MustParseDuration(s string) time.Duration {
+	value, err := time.ParseDuration(s)
+	if err != nil {
+		panic("util: Can't parse duration `" + s + "`: " + err.Error())
+	}
+	return value
+}
+
+func FormatRatReward(reward *big.Rat) string {
+	satoshi := new(big.Rat).SetInt(Xmr)
+	reward = reward.Quo(reward, satoshi)
+	return reward.FloatString(8)
 }

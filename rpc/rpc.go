@@ -49,6 +49,33 @@ type GetInfoReply struct {
 	Status              string `json:"status"`
 }
 
+type BlockHeader struct {
+	BlockSize    int    `json:"block_size"`
+	Depth        int    `json:"depth"`
+	Difficulty   int64  `json:"difficulty"`
+	Hash         string `json:"hash"`
+	Height       int    `json:"height"`
+	MajorVersion int    `json:"major_version"`
+	MinorVersion int    `json:"minor_version"`
+	Nonce        uint32 `json:"nonce"`
+	NumTxes      int    `json:"num_txes"`
+	OrphanStatus bool   `json:"orphan_status"`
+	PrevHash     string `json:"prev_hash"`
+	Reward       int64  `json:"reward"`
+	Timestamp    uint32 `json:"timestamp"`
+}
+
+type GetBlockHeaderReply struct {
+	BlockHeader BlockHeader `json:"block_header"`
+	Status      string      `json:"status"`
+	Untrusted   bool        `json:"untrusted"`
+}
+
+type GetBlockCountReply struct {
+	Count  int64  `json:"count"`
+	Status string `json:"status"`
+}
+
 type JSONRpcResp struct {
 	Id     *json.RawMessage       `json:"id"`
 	Result *json.RawMessage       `json:"result"`
@@ -63,10 +90,14 @@ func NewRPCClient(cfg *pool.Upstream) (*RPCClient, error) {
 	}
 	rpcClient := &RPCClient{Name: cfg.Name, Url: url}
 	timeout, _ := time.ParseDuration(cfg.Timeout)
-	rpcClient.client = &http.Client{
+	rpcClient.SetClient(&http.Client{
 		Timeout: timeout,
-	}
+	})
 	return rpcClient, nil
+}
+
+func (r *RPCClient) SetClient(client *http.Client) {
+	r.client = client
 }
 
 func (r *RPCClient) GetBlockTemplate(reserveSize int, address string) (*GetBlockTemplateReply, error) {
@@ -95,8 +126,34 @@ func (r *RPCClient) GetInfo() (*GetInfoReply, error) {
 	return reply, err
 }
 
+func (r *RPCClient) GetBlockCount() (*GetBlockCountReply, error) {
+	params := make(map[string]interface{})
+	rpcResp, err := r.doPost(r.Url.String(), "getblockcount", params)
+	var reply *GetBlockCountReply
+	if err != nil {
+		return nil, err
+	}
+	if rpcResp.Result != nil {
+		err = json.Unmarshal(*rpcResp.Result, &reply)
+	}
+	return reply, err
+}
+
 func (r *RPCClient) SubmitBlock(hash string) (*JSONRpcResp, error) {
 	return r.doPost(r.Url.String(), "submitblock", []string{hash})
+}
+
+func (r *RPCClient) GetBlockHeaderByHeight(height int64) (*GetBlockHeaderReply, error) {
+	params := map[string]interface{}{"height": height}
+	rpcResp, err := r.doPost(r.Url.String(), "getblockheaderbyheight", params)
+	var reply *GetBlockHeaderReply
+	if err != nil {
+		return nil, err
+	}
+	if rpcResp.Result != nil {
+		err = json.Unmarshal(*rpcResp.Result, &reply)
+	}
+	return reply, err
 }
 
 func (r *RPCClient) doPost(url, method string, params interface{}) (*JSONRpcResp, error) {

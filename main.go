@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/payouts"
 	"github.com/MiningPool0826/xmrpool/storage"
 	"log"
 	"math/rand"
@@ -165,6 +166,11 @@ func OptionParse() {
 	}
 }
 
+func startBlockUnlocker() {
+	u := payouts.NewBlockUnlocker(&cfg.BlockUnlocker, backend)
+	u.Start()
+}
+
 func main() {
 	OptionParse()
 	readConfig(&cfg)
@@ -213,6 +219,10 @@ func main() {
 			Error.Println(string(debug.Stack()))
 		}
 	}()
+
+	if cfg.BlockUnlocker.Enabled {
+		go startBlockUnlocker()
+	}
 
 	//startNewrelic()
 	startStratum()

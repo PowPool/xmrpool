@@ -20,20 +20,23 @@ import (
 )
 
 type StratumServer struct {
-	luckWindow       int64
-	luckLargeWindow  int64
-	roundShares      int64
-	blockStats       map[int64]blockEntry
-	config           *pool.Config
-	miners           MinersMap
-	blockTemplate    atomic.Value
-	upstream         int32
-	upstreams        []*rpc.RPCClient
-	timeout          time.Duration
-	estimationWindow time.Duration
-	blocksMu         sync.RWMutex
-	sessionsMu       sync.RWMutex
-	sessions         map[*Session]struct{}
+	luckWindow          int64
+	luckLargeWindow     int64
+	roundShares         int64
+	blockStats          map[int64]blockEntry
+	config              *pool.Config
+	miners              MinersMap
+	blockTemplate       atomic.Value
+	upstream            int32
+	upstreams           []*rpc.RPCClient
+	timeout             time.Duration
+	estimationWindow    time.Duration
+	hashrateWindow      time.Duration
+	hashrateLargeWindow time.Duration
+
+	blocksMu   sync.RWMutex
+	sessionsMu sync.RWMutex
+	sessions   map[*Session]struct{}
 
 	backend            *storage.RedisClient
 	hashrateExpiration time.Duration
@@ -99,6 +102,12 @@ func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
 	hashrateExpiration, _ := time.ParseDuration(cfg.HashRateExpiration)
 	stratum.hashrateExpiration = hashrateExpiration
 
+	hashrateWindow, _ := time.ParseDuration(cfg.HashrateWindow)
+	stratum.hashrateWindow = hashrateWindow
+
+	hashrateLargeWindow, _ := time.ParseDuration(cfg.HashrateLargeWindow)
+	stratum.hashrateLargeWindow = hashrateLargeWindow
+
 	luckWindow, _ := time.ParseDuration(cfg.LuckWindow)
 	stratum.luckWindow = int64(luckWindow / time.Millisecond)
 	luckLargeWindow, _ := time.ParseDuration(cfg.LargeLuckWindow)
@@ -108,11 +117,17 @@ func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
 	refreshTimer := time.NewTimer(refreshIntv)
 	Info.Printf("Set block refresh every %v", refreshIntv)
 
+	purgeIntv := MustParseDuration(cfg.PurgeInterval)
+	purgeTimer := time.NewTimer(purgeIntv)
+	Info.Printf("Set purge interval to %v", purgeIntv)
+
 	checkIntv, _ := time.ParseDuration(cfg.UpstreamCheckInterval)
 	checkTimer := time.NewTimer(checkIntv)
+	Info.Printf("Set check interval to %v", checkIntv)
 
 	infoIntv, _ := time.ParseDuration(cfg.UpstreamCheckInterval)
 	infoTimer := time.NewTimer(infoIntv)
+	Info.Printf("Set info interval to %v", infoIntv)
 
 	// Init block template
 	go stratum.refreshBlockTemplate(false)
@@ -123,6 +138,17 @@ func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
 			case <-refreshTimer.C:
 				stratum.refreshBlockTemplate(true)
 				refreshTimer.Reset(refreshIntv)
+			}
+		}
+	}()
+
+	// purge stale
+	go func() {
+		for {
+			select {
+			case <-purgeTimer.C:
+				stratum.purgeStale()
+				purgeTimer.Reset(purgeIntv)
 			}
 		}
 	}()
@@ -402,6 +428,16 @@ func (s *StratumServer) checkUpstreams() {
 	if s.upstream != candidate {
 		Info.Printf("Switching to %v upstream", s.upstreams[candidate].Name)
 		atomic.StoreInt32(&s.upstream, candidate)
+	}
+}
+
+func (s *StratumServer) purgeStale() {
+	start := time.Now()
+	total, err := s.backend.FlushStaleStats(s.hashrateWindow, s.hashrateLargeWindow)
+	if err != nil {
+		Error.Println("Failed to purge stale data from backend:", err)
+	} else {
+		Info.Printf("Purged stale stats from backend, %v shares affected, elapsed time %v", total, time.Since(start))
 	}
 }
 

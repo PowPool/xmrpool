@@ -29,13 +29,13 @@ Dependencies:
 
 Use Ubuntu 16.04 LTS.
 
-    apt-get libzmq-dev libssl-dev
-    apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
+    sudo apt-get libzmq-dev libssl-dev
+    sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
 
 Use Ubuntu 18.04 LTS.
 
-    apt-get libzmq5-dev libssl1.0-dev
-    apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
+    sudo apt-get libzmq5-dev libssl1.0-dev
+    sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
 
 
 Compile Monero source (with shared libraries option):
@@ -48,10 +48,12 @@ Compile Monero source (with shared libraries option):
 
 Install Golang and required packages:
 
-    sudo apt-get install golang
+    sudo apt install software-properties-common
+    sudo add-apt-repository ppa:longsleep/golang-backports
+    sudo apt-get update
+    sudo apt-get install golang-go
 
-Clone 
-:
+Clone:
 
     git clone https://github.com/MiningPool0826/xmrpool.git
     cd xmrpool

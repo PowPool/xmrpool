@@ -46,7 +46,7 @@ func (s *StratumServer) StatsIndex(w http.ResponseWriter, r *http.Request) {
 		stats["prevHash"] = t.prevHash[0:8]
 		stats["template"] = true
 	}
-	json.NewEncoder(w).Encode(stats)
+	_ = json.NewEncoder(w).Encode(stats)
 }
 
 func convertUpstream(u *rpc.RPCClient) map[string]interface{} {
@@ -115,11 +115,11 @@ func (s *StratumServer) getLuckStats() map[string]interface{} {
 	defer s.blocksMu.Unlock()
 
 	for k, v := range s.blockStats {
-		if k >= now-int64(s.luckWindow) {
+		if k >= now-s.luckWindow {
 			blocksCount++
 			variance += v.variance
 		}
-		if k >= now-int64(s.luckLargeWindow) {
+		if k >= now-s.luckLargeWindow {
 			totalBlocksCount++
 			totalVariance += v.variance
 		} else {

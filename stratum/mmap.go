@@ -30,7 +30,7 @@ func NewMinersMap() MinersMap {
 // Returns shard under given key
 func (m MinersMap) GetShard(key string) *MinersMapShared {
 	hasher := fnv.New32()
-	hasher.Write([]byte(key))
+	_, _ = hasher.Write([]byte(key))
 	return m[int(hasher.Sum32())%SHARD_COUNT]
 }
 

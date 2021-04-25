@@ -160,6 +160,9 @@ func (r *RPCClient) doPost(url, method string, params interface{}) (*JSONRpcResp
 	jsonReq := map[string]interface{}{"jsonrpc": "2.0", "id": 0, "method": method, "params": params}
 	data, _ := json.Marshal(jsonReq)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Content-Length", (string)(len(data)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")

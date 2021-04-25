@@ -90,7 +90,7 @@ func TestGetBalance(t *testing.T) {
 func TestLockPayouts(t *testing.T) {
 	reset()
 
-	r.LockPayouts("x", 1000)
+	_ = r.LockPayouts("x", 1000)
 	v := r.client.Get("test:payments:lock").Val()
 	if v != "x:1000" {
 		t.Errorf("Invalid lock amount: %v", v)
@@ -107,7 +107,7 @@ func TestUnlockPayouts(t *testing.T) {
 
 	r.client.Set(r.formatKey("payments:lock"), "x:1000", 0)
 
-	r.UnlockPayouts()
+	_ = r.UnlockPayouts()
 	err := r.client.Get(r.formatKey("payments:lock")).Err()
 	if err != redis.Nil {
 		t.Errorf("Must release lock")
@@ -117,7 +117,7 @@ func TestUnlockPayouts(t *testing.T) {
 func TestIsPayoutsLocked(t *testing.T) {
 	reset()
 
-	r.LockPayouts("x", 1000)
+	_ = r.LockPayouts("x", 1000)
 	if locked, _ := r.IsPayoutsLocked(); !locked {
 		t.Errorf("Payouts must be locked")
 	}
@@ -136,7 +136,7 @@ func TestUpdateBalance(t *testing.T) {
 	)
 
 	amount := int64(250)
-	r.UpdateBalance("x", amount)
+	_ = r.UpdateBalance("x", amount)
 	result := r.client.HGetAllMap(r.formatKey("miners:x")).Val()
 	if result["pending"] != "250" {
 		t.Error("Must set pending amount")
@@ -179,7 +179,7 @@ func TestRollbackBalance(t *testing.T) {
 	r.client.ZAdd(r.formatKey("payments:pending"), redis.Z{Score: 1, Member: "xx"})
 
 	amount := int64(250)
-	r.RollbackBalance("x", amount)
+	_ = r.RollbackBalance("x", amount)
 	result := r.client.HGetAllMap(r.formatKey("miners:x")).Val()
 	if result["paid"] != "100" {
 		t.Error("Must not touch paid")
@@ -221,7 +221,7 @@ func TestWritePayment(t *testing.T) {
 	)
 
 	amount := int64(250)
-	r.WritePayment("x", "0x0", amount)
+	_ = r.WritePayment("x", "0x0", amount)
 	result := r.client.HGetAllMap(r.formatKey("miners:x")).Val()
 	if result["pending"] != "0" {
 		t.Error("Must unset pending amount")
@@ -272,7 +272,7 @@ func TestGetPendingPayments(t *testing.T) {
 	)
 
 	amount := int64(1000)
-	r.UpdateBalance("x", amount)
+	_ = r.UpdateBalance("x", amount)
 	pending := r.GetPendingPayments()
 
 	if len(pending) != 1 {

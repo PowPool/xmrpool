@@ -236,7 +236,7 @@ func (e *Endpoint) Listen(s *StratumServer) {
 		if err != nil {
 			continue
 		}
-		conn.SetKeepAlive(true)
+		_ = conn.SetKeepAlive(true)
 		ip, _, _ := net.SplitHostPort(conn.RemoteAddr().String())
 		cs := &Session{conn: conn, ip: ip, enc: json.NewEncoder(conn), endpoint: e}
 		n += 1
@@ -283,16 +283,16 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 		}
 	}
 	s.removeSession(cs)
-	cs.conn.Close()
+	_ = cs.conn.Close()
 }
 
 func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq) error {
 	if req.Id == nil {
-		err := fmt.Errorf("Server disconnect request")
+		err := fmt.Errorf("server disconnect request")
 		Error.Println(err)
 		return err
 	} else if req.Params == nil {
-		err := fmt.Errorf("Server RPC request params")
+		err := fmt.Errorf("server RPC request params")
 		Error.Println(err)
 		return err
 	}
@@ -367,13 +367,13 @@ func (cs *Session) sendError(id *json.RawMessage, reply *ErrorReply, drop bool) 
 		return err
 	}
 	if drop {
-		return fmt.Errorf("Server disconnect request")
+		return fmt.Errorf("server disconnect request")
 	}
 	return nil
 }
 
 func (s *StratumServer) setDeadline(conn *net.TCPConn) {
-	conn.SetDeadline(time.Now().Add(s.timeout))
+	_ = conn.SetDeadline(time.Now().Add(s.timeout))
 }
 
 func (s *StratumServer) registerSession(cs *Session) {

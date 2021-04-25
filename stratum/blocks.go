@@ -26,7 +26,7 @@ type BlockTemplate struct {
 
 func (b *BlockTemplate) nextBlob(extraNonce uint32, instanceId []byte) string {
 	extraBuff := new(bytes.Buffer)
-	binary.Write(extraBuff, binary.BigEndian, extraNonce)
+	_ = binary.Write(extraBuff, binary.BigEndian, extraNonce)
 
 	blobBuff := make([]byte, len(b.buffer))
 	copy(blobBuff, b.buffer)

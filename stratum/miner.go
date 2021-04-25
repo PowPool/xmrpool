@@ -141,7 +141,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	copy(shareBuff[t.reservedOffset+4:t.reservedOffset+7], cs.endpoint.instanceId)
 
 	extraBuff := new(bytes.Buffer)
-	binary.Write(extraBuff, binary.BigEndian, job.extraNonce)
+	_ = binary.Write(extraBuff, binary.BigEndian, job.extraNonce)
 	copy(shareBuff[t.reservedOffset:], extraBuff.Bytes())
 
 	nonceBuff, _ := hex.DecodeString(nonce)

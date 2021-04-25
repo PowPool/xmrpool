@@ -29,10 +29,17 @@ Dependencies:
 
 Use Ubuntu 16.04 LTS.
 
+    apt-get libzmq-dev libssl-dev
+    apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
+
+Use Ubuntu 18.04 LTS.
+
+    apt-get libzmq5-dev libssl1.0-dev
+    apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
+
+
 Compile Monero source (with shared libraries option):
 
-    apt-get install git cmake build-essential libssl-dev pkg-config libboost-all-dev
-    apt-get install libreadline-dev libzmq-dev doxygen libsodium-dev
     git clone --recursive https://github.com/monero-project/monero.git
     cd monero
     git checkout tags/v0.14.0.0 -b v0.14.0.0

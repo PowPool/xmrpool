@@ -29,13 +29,15 @@ Dependencies:
 
 Use Ubuntu 16.04 LTS.
 
-    sudo apt-get install libzmq-dev libssl-dev
-    sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
+    sudo apt-get install libssl-dev
+    sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev libzmq5-dev
+    sudo apt-get install liblmdb-dev libevent-dev libjson-c-dev uuid-dev
 
 Use Ubuntu 18.04 LTS.
 
-    sudo apt-get install libzmq5-dev libssl1.0-dev
-    sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
+    sudo apt-get install libssl1.0-dev
+    sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev libzmq5-dev 
+    sudo apt-get install liblmdb-dev libevent-dev libjson-c-dev uuid-dev
 
 
 Compile Monero source (with shared libraries option):

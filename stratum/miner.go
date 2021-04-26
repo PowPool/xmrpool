@@ -69,7 +69,7 @@ func (cs *Session) getJob(t *BlockTemplate) *JobReplyData {
 	}
 	job.submissions = make(map[string]struct{})
 	cs.pushJob(job)
-	reply := &JobReplyData{JobId: job.id, Blob: blob, Target: cs.endpoint.targetHex}
+	reply := &JobReplyData{Algo: "rx/0", JobId: job.id, Blob: blob, Target: cs.endpoint.targetHex}
 	return reply
 }
 

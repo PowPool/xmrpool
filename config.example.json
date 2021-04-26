@@ -1,6 +1,6 @@
 {
 	"addressEncrypted": "1Wb/b37j1DVulklkzb6TLJ0CL9y3hcos0pMnA4nD++pIkXteeVRtno55uKJrGRp7hWM6cbiS6wRHCDGv3b1CsCEqy4+eXhDHuGbH3ReVtEemMQVUchJvJ1jQu+pqki/c",
-	"bypassAddressValidation": true,
+	"bypassAddressValidation": false,
 	"bypassShareValidation": true,
 
 	"threads": 4,

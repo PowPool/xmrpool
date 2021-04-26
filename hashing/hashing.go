@@ -26,7 +26,7 @@ func RxHash(blob []byte, seedHash []byte, height int64, maxConcurrency uint) []b
 	output := make([]byte, 32)
 	seedHeight := C.rx_seedheight((C.uint64_t)(height))
 
-	C.rx_slow_hash((C.uint64_t)(height), (C.uint64_t)(seedHeight), (*C.char)(unsafe.Pointer(&seedHash[0])),
+	C.randomx_slow_hash((C.uint64_t)(height), (C.uint64_t)(seedHeight), (*C.char)(unsafe.Pointer(&seedHash[0])),
 		(*C.char)(unsafe.Pointer(&blob[0])), (C.uint32_t)(len(blob)), (*C.char)(unsafe.Pointer(&output[0])),
 		(C.uint32_t)(maxConcurrency), (C.uint32_t)(0))
 	return output

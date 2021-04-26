@@ -23,7 +23,7 @@ Dependencies:
 
   * go-1.15
   * Everything required to build Monero
-  * Monero >= **v0.14.0.0** (sometimes `master` branch required)
+  * Monero >= **v0.17.0.0** (sometimes `master` branch required)
 
 ### Linux
 
@@ -42,7 +42,7 @@ Compile Monero source (with shared libraries option):
 
     git clone --recursive https://github.com/monero-project/monero.git
     cd monero
-    git checkout tags/v0.14.0.0 -b v0.14.0.0
+    git checkout tags/v0.17.0.0 -b v0.17.0.0
     cmake -DBUILD_SHARED_LIBS=1 -DMANUAL_SUBMODULES=1 .
     make
 
@@ -73,7 +73,7 @@ Compile Monero source:
 
     git clone --recursive https://github.com/monero-project/monero.git
     cd monero
-    git checkout tags/v0.14.0.0 -b v0.14.0.0
+    git checkout tags/v0.17.0.0 -b v0.17.0.0
     cmake .
     make
 

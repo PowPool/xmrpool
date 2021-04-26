@@ -29,12 +29,12 @@ Dependencies:
 
 Use Ubuntu 16.04 LTS.
 
-    sudo apt-get libzmq-dev libssl-dev
+    sudo apt-get install libzmq-dev libssl-dev
     sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
 
 Use Ubuntu 18.04 LTS.
 
-    sudo apt-get libzmq5-dev libssl1.0-dev
+    sudo apt-get install libzmq5-dev libssl1.0-dev
     sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev
 
 

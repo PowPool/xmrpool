@@ -32,18 +32,18 @@ func (s *StratumServer) handleLoginRPC(cs *Session, params *LoginParams) (*JobRe
 	cs.login = address
 	cs.id = id
 
-	miner, ok := s.miners.Get(id)
+	miner, ok := s.miners.Get(cs.id)
 	if !ok {
-		miner = NewMiner(id, cs.ip)
+		miner = NewMiner(cs.id, cs.ip)
 		s.registerMiner(miner)
 	}
 
-	Info.Printf("Miner connected %s@%s", id, cs.ip)
+	Info.Printf("Miner connected %s.%s@%s", cs.login, cs.id, cs.ip)
 
 	s.registerSession(cs)
 	miner.heartbeat()
 
-	return &JobReply{Id: id, Job: cs.getJob(t), Status: "OK"}, nil
+	return &JobReply{Id: cs.id, Job: cs.getJob(t), Status: "OK"}, nil
 }
 
 func (s *StratumServer) handleGetJobRPC(cs *Session, params *GetJobParams) (*JobReplyData, *ErrorReply) {
@@ -83,8 +83,8 @@ func (s *StratumServer) handleSubmitRPC(cs *Session, params *SubmitParams) (*Sta
 
 	t := s.currentBlockTemplate()
 	if job.height != t.height {
-		Error.Printf("Stale share for height %d from %s@%s", job.height, miner.id, cs.ip)
-		ShareLog.Printf("Stale share for height %d from %s@%s", job.height, miner.id, cs.ip)
+		Error.Printf("Stale share for height %d from %s.%s@%s", job.height, cs.login, cs.id, cs.ip)
+		ShareLog.Printf("Stale share for height %d from %s.%s@%s", job.height, cs.login, cs.id, cs.ip)
 		atomic.AddInt64(&miner.staleShares, 1)
 		return nil, &ErrorReply{Code: -1, Message: "Block expired"}
 	}

@@ -136,6 +136,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	hashrateExpiration time.Duration) bool {
 	r := s.rpc()
 
+	// 8 bytes (reserved) = 4 bytes (extraNonce) + 4 bytes (instanceId)
 	shareBuff := make([]byte, len(t.buffer))
 	copy(shareBuff, t.buffer)
 	copy(shareBuff[t.reservedOffset+4:t.reservedOffset+7], cs.endpoint.instanceId)
@@ -173,10 +174,12 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	block := hashDiff.Cmp(t.difficulty) >= 0
 
 	nonceHex := hex.EncodeToString(nonceBuff)
-	instanceIdHex := hex.EncodeToString(cs.endpoint.instanceId)
 	extraHex := hex.EncodeToString(extraBuff.Bytes())
-	paramIn := []string{nonceHex, instanceIdHex, extraHex}
+	instanceIdHex := hex.EncodeToString(cs.endpoint.instanceId)
+	paramIn := []string{nonceHex, extraHex, instanceIdHex}
+
 	if block {
+		// block
 		_, err := r.SubmitBlock(hex.EncodeToString(shareBuff))
 		if err != nil {
 			atomic.AddInt64(&m.rejects, 1)
@@ -225,6 +228,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 			s.refreshBlockTemplate(true)
 		}
 	} else if hashDiff.Cmp(cs.endpoint.difficulty) < 0 {
+		// invalid share
 		ms := MakeTimestamp()
 		ts := ms / 1000
 		err := s.backend.WriteRejectShare(ms, ts, cs.login, cs.id, cs.endpoint.difficulty.Int64())
@@ -236,25 +240,26 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 		ShareLog.Printf("Rejected low difficulty share of %v from %v.%v@%v", hashDiff, cs.login, cs.id, cs.ip)
 		atomic.AddInt64(&m.invalidShares, 1)
 		return false
+	} else {
+		// share
+		exist, err := s.backend.WriteShare(cs.login, cs.id, paramIn, cs.endpoint.difficulty.Int64(), uint64(t.height), s.hashrateExpiration)
+		if exist {
+			ms := MakeTimestamp()
+			ts := ms / 1000
+			err := s.backend.WriteInvalidShare(ms, ts, cs.login, cs.id, cs.endpoint.difficulty.Int64())
+			if err != nil {
+				Error.Println("Failed to insert invalid share data into backend:", err)
+			}
+			return false
+		}
+		if err != nil {
+			Error.Println("Failed to insert share data into backend:", err)
+		}
 	}
 
 	atomic.AddInt64(&s.roundShares, cs.endpoint.config.Difficulty)
 	atomic.AddInt64(&m.validShares, 1)
 	m.storeShare(cs.endpoint.config.Difficulty)
-
-	exist, err := s.backend.WriteShare(cs.login, cs.id, paramIn, cs.endpoint.difficulty.Int64(), uint64(t.height), s.hashrateExpiration)
-	if exist {
-		ms := MakeTimestamp()
-		ts := ms / 1000
-		err := s.backend.WriteInvalidShare(ms, ts, cs.login, cs.id, cs.endpoint.difficulty.Int64())
-		if err != nil {
-			Error.Println("Failed to insert invalid share data into backend:", err)
-		}
-		return false
-	}
-	if err != nil {
-		Error.Println("Failed to insert share data into backend:", err)
-	}
 
 	Info.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)
 	ShareLog.Printf("Valid share at difficulty %v/%v", cs.endpoint.config.Difficulty, hashDiff)

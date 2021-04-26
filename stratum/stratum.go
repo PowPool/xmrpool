@@ -40,6 +40,8 @@ type StratumServer struct {
 
 	backend            *storage.RedisClient
 	hashrateExpiration time.Duration
+
+	upstreamsStates []bool
 }
 
 type blockEntry struct {
@@ -428,6 +430,32 @@ func (s *StratumServer) checkUpstreams() {
 	if s.upstream != candidate {
 		Info.Printf("Switching to %v upstream", s.upstreams[candidate].Name)
 		atomic.StoreInt32(&s.upstream, candidate)
+	}
+
+	upstreamsAllSick := true
+	for _, v := range s.upstreams {
+		if !v.Sick() {
+			upstreamsAllSick = false
+			break
+		}
+	}
+
+	s.upstreamsStates = append(s.upstreamsStates, upstreamsAllSick)
+	if len(s.upstreamsStates) >= 60 {
+		s.upstreamsStates = s.upstreamsStates[len(s.upstreamsStates)-60 : len(s.upstreamsStates)]
+
+		// sick in the past 5 minutes, log and exit
+		sickStatusAllTrue := true
+		for _, v := range s.upstreamsStates {
+			if !v {
+				sickStatusAllTrue = false
+				break
+			}
+		}
+
+		if sickStatusAllTrue {
+			Error.Fatal("all upstreams status were sick in the latest 5 minutes")
+		}
 	}
 }
 

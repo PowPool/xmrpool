@@ -28,6 +28,7 @@ func (b *BlockTemplate) nextBlob(extraNonce uint32, instanceId []byte) string {
 	extraBuff := new(bytes.Buffer)
 	_ = binary.Write(extraBuff, binary.BigEndian, extraNonce)
 
+	// 8 bytes (reserved) = 4 bytes (extraNonce) + 4 bytes (instanceId)
 	blobBuff := make([]byte, len(b.buffer))
 	copy(blobBuff, b.buffer)
 	copy(blobBuff[b.reservedOffset+4:b.reservedOffset+7], instanceId)

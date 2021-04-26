@@ -34,7 +34,7 @@ func (s *StratumServer) handleLoginRPC(cs *Session, params *LoginParams) (*JobRe
 
 	miner, ok := s.miners.Get(cs.id)
 	if !ok {
-		miner = NewMiner(cs.id, cs.ip)
+		miner = NewMiner(cs.id, cs.ip, s.maxConcurrency)
 		s.registerMiner(miner)
 	}
 

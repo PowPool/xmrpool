@@ -35,6 +35,8 @@ type Miner struct {
 	sync.RWMutex
 	id string
 	ip string
+
+	maxConcurrency int
 }
 
 func (job *Job) submit(nonce string) bool {
@@ -47,9 +49,9 @@ func (job *Job) submit(nonce string) bool {
 	return false
 }
 
-func NewMiner(id string, ip string) *Miner {
+func NewMiner(id string, ip string, maxConcurrency int) *Miner {
 	shares := make(map[int64]int64)
-	return &Miner{id: id, ip: ip, shares: shares}
+	return &Miner{id: id, ip: ip, shares: shares, maxConcurrency: maxConcurrency}
 }
 
 func (cs *Session) getJob(t *BlockTemplate) *JobReplyData {
@@ -69,7 +71,7 @@ func (cs *Session) getJob(t *BlockTemplate) *JobReplyData {
 	}
 	job.submissions = make(map[string]struct{})
 	cs.pushJob(job)
-	reply := &JobReplyData{Algo: "rx/0", JobId: job.id, Blob: blob, Target: cs.endpoint.targetHex}
+	reply := &JobReplyData{Algo: "rx/0", JobId: job.id, Blob: blob, Target: cs.endpoint.targetHex, SeedHash: hex.EncodeToString(t.seedHash)}
 	return reply
 }
 
@@ -156,7 +158,8 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 		hashBytes, _ = hex.DecodeString(result)
 	} else {
 		convertedBlob = cnutil.ConvertBlob(shareBuff)
-		hashBytes = hashing.Hash(convertedBlob, false, t.height)
+		//hashBytes = hashing.Hash(convertedBlob, false, t.height)
+		hashing.RxHash(convertedBlob, t.seedHash, t.height, uint(m.maxConcurrency))
 	}
 
 	if !s.config.BypassShareValidation && hex.EncodeToString(hashBytes) != result {

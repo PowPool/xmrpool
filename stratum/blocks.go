@@ -19,6 +19,7 @@ type BlockTemplate struct {
 	reservedOffset int
 	prevHash       string
 	buffer         []byte
+	seedHash       []byte
 
 	blockReward int64
 	txTotalFee  int64
@@ -66,6 +67,7 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 		prevHash:       reply.PrevHash,
 		reservedOffset: reply.ReservedOffset,
 	}
+	newTemplate.seedHash, _ = hex.DecodeString(reply.SeedHash)
 	newTemplate.buffer, _ = hex.DecodeString(reply.Blob)
 
 	// set blockReward and txTotalFee

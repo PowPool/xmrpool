@@ -38,7 +38,8 @@ type GetBlockTemplateReply struct {
 	ReservedOffset int    `json:"reserved_offset"`
 	PrevHash       string `json:"prev_hash"`
 
-	ExpectedReward int64 `json:"expected_reward"`
+	ExpectedReward int64  `json:"expected_reward"`
+	SeedHash       string `json:"seed_hash"`
 }
 
 type GetInfoReply struct {

@@ -42,6 +42,8 @@ type StratumServer struct {
 	hashrateExpiration time.Duration
 
 	upstreamsStates []bool
+
+	maxConcurrency int
 }
 
 type blockEntry struct {
@@ -78,7 +80,8 @@ const (
 )
 
 func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
-	stratum := &StratumServer{config: cfg, backend: backend, blockStats: make(map[int64]blockEntry)}
+	stratum := &StratumServer{config: cfg, backend: backend, blockStats: make(map[int64]blockEntry),
+		maxConcurrency: cfg.Threads}
 
 	stratum.upstreams = make([]*rpc.RPCClient, len(cfg.Upstream))
 	for i, v := range cfg.Upstream {

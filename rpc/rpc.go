@@ -40,6 +40,7 @@ type GetBlockTemplateReply struct {
 
 	ExpectedReward int64  `json:"expected_reward"`
 	SeedHash       string `json:"seed_hash"`
+	NextSeedHash   string `json:"next_seed_hash"`
 }
 
 type GetInfoReply struct {

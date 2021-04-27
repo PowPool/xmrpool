@@ -71,7 +71,8 @@ func (cs *Session) getJob(t *BlockTemplate) *JobReplyData {
 	}
 	job.submissions = make(map[string]struct{})
 	cs.pushJob(job)
-	reply := &JobReplyData{Algo: "rx/0", JobId: job.id, Blob: blob, Target: cs.endpoint.targetHex, SeedHash: hex.EncodeToString(t.seedHash)}
+	reply := &JobReplyData{Algo: "rx/0", JobId: job.id, Blob: blob, Target: cs.endpoint.targetHex,
+		SeedHash: hex.EncodeToString(t.seedHash), NextSeedHash: hex.EncodeToString(t.nextSeedHash)}
 	return reply
 }
 

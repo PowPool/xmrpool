@@ -21,8 +21,9 @@ type BlockTemplate struct {
 	buffer         []byte
 	seedHash       []byte
 
-	blockReward int64
-	txTotalFee  int64
+	blockReward  int64
+	txTotalFee   int64
+	nextSeedHash []byte
 }
 
 func (b *BlockTemplate) nextBlob(extraNonce uint32, instanceId []byte) string {
@@ -69,6 +70,7 @@ func (s *StratumServer) fetchBlockTemplate() bool {
 	}
 	newTemplate.seedHash, _ = hex.DecodeString(reply.SeedHash)
 	newTemplate.buffer, _ = hex.DecodeString(reply.Blob)
+	newTemplate.nextSeedHash, _ = hex.DecodeString(reply.NextSeedHash)
 
 	// set blockReward and txTotalFee
 	var blockTemplateBlob blocktemplate.BlockTemplateBlob

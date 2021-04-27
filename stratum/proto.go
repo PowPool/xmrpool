@@ -45,11 +45,12 @@ type JobReply struct {
 }
 
 type JobReplyData struct {
-	Algo     string `json:"algo"`
-	Blob     string `json:"blob"`
-	JobId    string `json:"job_id"`
-	Target   string `json:"target"`
-	SeedHash string `json:"seed_hash"`
+	Algo         string `json:"algo"`
+	Blob         string `json:"blob"`
+	JobId        string `json:"job_id"`
+	Target       string `json:"target"`
+	SeedHash     string `json:"seed_hash"`
+	NextSeedHash string `json:"next_seed_hash"`
 }
 
 type StatusReply struct {

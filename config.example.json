@@ -1,9 +1,9 @@
 {
-	"addressEncrypted": "1Wb/b37j1DVulklkzb6TLJ0CL9y3hcos0pMnA4nD++pIkXteeVRtno55uKJrGRp7hWM6cbiS6wRHCDGv3b1CsCEqy4+eXhDHuGbH3ReVtEemMQVUchJvJ1jQu+pqki/c",
+	"addressEncrypted": "4EC33mxDq4Lx1OjfgWuLyeZCsRDy9LPOpG+0j5zBqB82/7/gVjPDo9qGdk93qbrQdQHsfXLOPcXGOK7kM//xW/6ZWP5uATWZOIBBzmGI/oZbBH4/yPB79AdokISbmWKu",
 	"bypassAddressValidation": false,
 	"bypassShareValidation": true,
 
-	"threads": 4,
+	"threads": 16,
 	"coin": "xmr",
 
 	"estimationWindow": "15m",
@@ -27,15 +27,15 @@
 		"listen": [
 			{
 				"host": "0.0.0.0",
-				"port": 1111,
-				"diff": 8000,
-				"maxConn": 32768
+				"port": 3003,
+				"diff": 300000,
+				"maxConn": 50000
 			}
 		]
 	},
 
 	"frontend": {
-		"enabled": true,
+		"enabled": false,
 		"listen": "0.0.0.0:8082",
 		"login": "admin",
 		"password": "",
@@ -47,33 +47,39 @@
 	"upstream": [
 		{
 			"name": "Main",
-			"host": "192.168.1.124",
-			"port": 21111,
+			"host": "192.168.33.166",
+			"port": 18081,
 			"timeout": "3s"
 		},
 		{
-			"name": "Backup",
-			"host": "192.168.1.124",
-			"port": 21111,
+			"name": "Backup1",
+			"host": "192.168.26.83",
+			"port": 18081,
+			"timeout": "3s"
+		},
+		{
+			"name": "Backup2",
+			"host": "192.168.33.243",
+			"port": 18081,
 			"timeout": "3s"
 		}
 	],
 
 	"redis": {
-		"enabled": true,
+		"enabled": false,
 		"endpoint": "127.0.0.1:6379",
 		"poolSize": 10,
 		"database": 0,
-		"passwordEncrypted": "LKsi0nIJ/i8iNZJChcgDhQ=="
+		"passwordEncrypted": "oXyI5OTy+nRTshESi80X8KKSjDiLksuw1mhwRg2z0Ic="
 	},
 
 	"redisFailover": {
-		"enabled": false,
+		"enabled": true,
 		"masterName": "mymaster",
-		"sentinelEndpoints": ["192.168.224.205:26379", "192.168.224.215:26379", "192.168.224.139:26379"],
+		"sentinelEndpoints": ["192.168.33.166:26379", "192.168.26.83:26379", "192.168.33.243:26379"],
 		"poolSize": 10,
 		"database": 0,
-		"passwordEncrypted": ""
+		"passwordEncrypted": "oXyI5OTy+nRTshESi80X8KKSjDiLksuw1mhwRg2z0Ic="
 	},
 
 	"unlocker": {
@@ -86,8 +92,8 @@
 		"keepTxFees": false,
 		"interval": "10m",
 		"daemonName": "unlocker",
-		"daemonHost": "192.168.1.124",
-		"daemonPort": 21111,
+		"daemonHost": "192.168.33.166",
+		"daemonPort": 18081,
 		"timeout": "10s"
 	},
 

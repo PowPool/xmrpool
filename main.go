@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/cnutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -128,7 +129,7 @@ func decryptPoolConfigure(cfg *pool.Config, passBytes []byte) error {
 	cfg.Address = string(b)
 
 	// check address
-	if !ValidateAddress(cfg.Address, cfg.Address) {
+	if !cnutil.ValidateAddress(cfg.Address) {
 		return errors.New("decryptPoolConfigure: ValidateAddress")
 	}
 

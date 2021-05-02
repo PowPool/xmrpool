@@ -2,12 +2,9 @@ package util
 
 import (
 	"encoding/hex"
+	"github.com/ethereum/go-ethereum/common/math"
 	"math/big"
 	"time"
-	"unicode/utf8"
-
-	"github.com/MiningPool0826/xmrpool/cnutil"
-	"github.com/ethereum/go-ethereum/common/math"
 )
 
 var Xmr = math.BigPow(10, 12)
@@ -46,17 +43,17 @@ func GetHashDifficulty(hashBytes []byte) (*big.Int, bool) {
 	return diff.Div(Diff1, diff), true
 }
 
-func ValidateAddress(addy string, poolAddy string) bool {
-	if len(addy) != len(poolAddy) {
-		return false
-	}
-	prefix, _ := utf8.DecodeRuneInString(addy)
-	poolPrefix, _ := utf8.DecodeRuneInString(poolAddy)
-	if prefix != poolPrefix {
-		return false
-	}
-	return cnutil.ValidateAddress(addy)
-}
+//func ValidateAddress(addy string, poolAddy string) bool {
+//	if len(addy) != len(poolAddy) {
+//		return false
+//	}
+//	prefix, _ := utf8.DecodeRuneInString(addy)
+//	poolPrefix, _ := utf8.DecodeRuneInString(poolAddy)
+//	if prefix != poolPrefix {
+//		return false
+//	}
+//	return cnutil.ValidateAddress(addy)
+//}
 
 func reverse(src []byte) []byte {
 	dst := make([]byte, len(src))

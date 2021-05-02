@@ -3,6 +3,7 @@ package payouts
 import (
 	"errors"
 	"fmt"
+	"github.com/MiningPool0826/xmrpool/cnutil"
 	"github.com/MiningPool0826/xmrpool/pool"
 	"math/big"
 	"net/http"
@@ -37,7 +38,7 @@ type BlockUnlocker struct {
 }
 
 func NewBlockUnlocker(cfg *pool.UnlockerConfig, backend *storage.RedisClient) *BlockUnlocker {
-	if len(cfg.PoolFeeAddress) != 0 && !ValidateAddress(cfg.PoolFeeAddress, cfg.PoolFeeAddress) {
+	if len(cfg.PoolFeeAddress) != 0 && !cnutil.ValidateAddress(cfg.PoolFeeAddress) {
 		Error.Fatalln("Invalid poolFeeAddress", cfg.PoolFeeAddress)
 	}
 	//if cfg.Depth < minDepth*2 {

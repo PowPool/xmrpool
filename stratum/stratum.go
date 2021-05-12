@@ -264,10 +264,10 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 			Info.Println("Socket flood detected from", cs.ip)
 			break
 		} else if err == io.EOF {
-			Info.Println("Client disconnected", cs.ip)
+			Info.Printf("Client disconnected: Address: [%s] | Name: [%s] | IP: [%s]", cs.login, cs.id, cs.ip)
 			break
 		} else if err != nil {
-			Error.Println("Error reading:", err)
+			Error.Printf("Error reading from socket: %v | Address: [%s] | Name: [%s] | IP: [%s]", err, cs.login, cs.id, cs.ip)
 			break
 		}
 
@@ -283,6 +283,7 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 			s.setDeadline(cs.conn)
 			err = cs.handleMessage(s, e, &req)
 			if err != nil {
+				Error.Printf("handleTCPMessage: %v", err)
 				break
 			}
 		}
@@ -309,7 +310,7 @@ func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq)
 		var params LoginParams
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
-			Error.Println("Unable to parse params")
+			Error.Println("Unable to parse params: login")
 			return err
 		}
 		reply, errReply := s.handleLoginRPC(cs, &params)
@@ -321,7 +322,7 @@ func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq)
 		var params GetJobParams
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
-			Error.Println("Unable to parse params")
+			Error.Println("Unable to parse params: getjob")
 			return err
 		}
 		reply, errReply := s.handleGetJobRPC(cs, &params)
@@ -333,7 +334,7 @@ func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq)
 		var params SubmitParams
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
-			Error.Println("Unable to parse params")
+			Error.Println("Unable to parse params: submit")
 			return err
 		}
 		reply, errReply := s.handleSubmitRPC(cs, &params)

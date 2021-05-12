@@ -1,11 +1,11 @@
 package stratum
 
 import (
+	"github.com/MiningPool0826/xmrpool/cnutil"
 	"regexp"
 	"strings"
 	"sync/atomic"
 
-	"github.com/MiningPool0826/xmrpool/util"
 	. "github.com/MiningPool0826/xmrpool/util"
 )
 
@@ -19,7 +19,7 @@ func init() {
 
 func (s *StratumServer) handleLoginRPC(cs *Session, params *LoginParams) (*JobReply, *ErrorReply) {
 	address, id := extractWorkerId(params.Login)
-	if !s.config.BypassAddressValidation && !util.ValidateAddress(address, s.config.Address) {
+	if !s.config.BypassAddressValidation && !cnutil.ValidateAddress(address) {
 		Error.Printf("Invalid address %s used for login by %s", address, cs.ip)
 		return nil, &ErrorReply{Code: -1, Message: "Invalid address used for login"}
 	}

@@ -264,7 +264,11 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 			Info.Println("Socket flood detected from", cs.ip)
 			break
 		} else if err == io.EOF {
-			Info.Printf("Client disconnected: Address: [%s] | Name: [%s] | IP: [%s]", cs.login, cs.id, cs.ip)
+			if cs.login == "" && cs.id == "" {
+				Info.Println("Client disconnected from", cs.ip)
+			} else {
+				Info.Printf("Client disconnected: Address: [%s] | Name: [%s] | IP: [%s]", cs.login, cs.id, cs.ip)
+			}
 			break
 		} else if err != nil {
 			Error.Printf("Error reading from socket: %v | Address: [%s] | Name: [%s] | IP: [%s]", err, cs.login, cs.id, cs.ip)

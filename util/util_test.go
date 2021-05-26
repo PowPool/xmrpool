@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/hex"
+	"fmt"
 	"testing"
 )
 
@@ -27,6 +28,14 @@ func TestGetHashDifficulty(t *testing.T) {
 	if !ok && shareDiff.String() != "1009" {
 		t.Error("Invalid diff")
 	}
+}
+
+func TestGetHashDifficulty2(t *testing.T) {
+	hash := "8e3c1865f22801dc3df0a688da80701e2390e7838e65c0000000000000000000"
+	hashBytes, _ := hex.DecodeString(hash)
+	shareDiff, _ := GetHashDifficulty(hashBytes)
+
+	fmt.Println("difficulty: ", shareDiff)
 }
 
 func TestGetHashDifficultyWithBrokenHash(t *testing.T) {

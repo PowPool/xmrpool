@@ -130,9 +130,9 @@ func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
 	checkTimer := time.NewTimer(checkIntv)
 	Info.Printf("Set check interval to %v", checkIntv)
 
-	infoIntv, _ := time.ParseDuration(cfg.UpstreamCheckInterval)
-	infoTimer := time.NewTimer(infoIntv)
-	Info.Printf("Set info interval to %v", infoIntv)
+	//infoIntv, _ := time.ParseDuration(cfg.UpstreamCheckInterval)
+	//infoTimer := time.NewTimer(infoIntv)
+	//Info.Printf("Set info interval to %v", infoIntv)
 
 	// Init block template
 	go stratum.refreshBlockTemplate(false)
@@ -168,31 +168,31 @@ func NewStratum(cfg *pool.Config, backend *storage.RedisClient) *StratumServer {
 		}
 	}()
 
-	go func() {
-		for {
-			select {
-			case <-infoTimer.C:
-				poll := func(v *rpc.RPCClient) {
-					_, err := v.UpdateInfo()
-					if err != nil {
-						Error.Printf("Unable to update info on upstream %s: %v", v.Name, err)
-					}
-				}
-				current := stratum.rpc()
-				poll(current)
-
-				// Async rpc call to not block on rpc timeout, ignoring current
-				go func() {
-					for _, v := range stratum.upstreams {
-						if v != current {
-							poll(v)
-						}
-					}
-				}()
-				infoTimer.Reset(infoIntv)
-			}
-		}
-	}()
+	//go func() {
+	//	for {
+	//		select {
+	//		case <-infoTimer.C:
+	//			poll := func(v *rpc.RPCClient) {
+	//				_, err := v.UpdateInfo()
+	//				if err != nil {
+	//					Error.Printf("Unable to update info on upstream %s: %v", v.Name, err)
+	//				}
+	//			}
+	//			current := stratum.rpc()
+	//			poll(current)
+	//
+	//			// Async rpc call to not block on rpc timeout, ignoring current
+	//			go func() {
+	//				for _, v := range stratum.upstreams {
+	//					if v != current {
+	//						poll(v)
+	//					}
+	//				}
+	//			}()
+	//			infoTimer.Reset(infoIntv)
+	//		}
+	//	}
+	//}()
 
 	return stratum
 }

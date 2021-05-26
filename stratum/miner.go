@@ -268,7 +268,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	atomic.AddInt64(&m.validShares, 1)
 	m.storeShare(cs.endpoint.config.Difficulty)
 
-	Info.Printf("Valid share at difficulty %v/%v from %v.%v@%v", cs.endpoint.config.Difficulty, hashDiff, cs.login, cs.id, cs.ip)
-	ShareLog.Printf("Valid share at difficulty %v/%v from %v.%v@%v", cs.endpoint.config.Difficulty, hashDiff, cs.login, cs.id, cs.ip)
+	Info.Printf("Valid share of %v at difficulty %v[%v] from %v.%v@%v", hashDiff, cs.endpoint.config.Difficulty, t.difficulty, cs.login, cs.id, cs.ip)
+	ShareLog.Printf("Valid share of %v at difficulty %v[%v] from %v.%v@%v", hashDiff, cs.endpoint.config.Difficulty, t.difficulty, cs.login, cs.id, cs.ip)
 	return true
 }

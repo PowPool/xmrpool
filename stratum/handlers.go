@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	. "github.com/MiningPool0826/xmrpool/util"
 )
@@ -110,7 +111,9 @@ func (s *StratumServer) broadcastNewJobs() {
 	defer s.sessionsMu.RUnlock()
 	count := len(s.sessions)
 	Info.Printf("Broadcasting new jobs to %d miners", count)
-	bcast := make(chan int, 1024*16)
+
+	start := time.Now()
+	bcast := make(chan int, 1024)
 	n := 0
 
 	for m := range s.sessions {
@@ -128,6 +131,7 @@ func (s *StratumServer) broadcastNewJobs() {
 			}
 		}(m)
 	}
+	Info.Printf("Jobs broadcast finished %s", time.Since(start))
 }
 
 func (s *StratumServer) refreshBlockTemplate(bcast bool) {

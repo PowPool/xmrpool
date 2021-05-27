@@ -1,7 +1,7 @@
 {
 	"addressEncrypted": "xePkFW8E5OhMuFg/FyQQqCFs2awuArs/QGEAyJcZ8X4mBV6FM+k1vER2WW6lMSUd1cP/ggTXR8j+43qVa+bNijZMdZyrohoT/7rNUj/toDFGVxzDTDtrRvVs9LbRGtIx",
 	"bypassAddressValidation": false,
-	"bypassShareValidation": true,
+	"bypassShareValidation": false,
 
 	"threads": 16,
 	"coin": "xmr",

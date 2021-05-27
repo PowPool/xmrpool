@@ -161,7 +161,7 @@ func (m *Miner) processShare(s *StratumServer, cs *Session, job *Job, t *BlockTe
 	} else {
 		convertedBlob = cnutil.ConvertBlob(shareBuff)
 		//hashBytes = hashing.Hash(convertedBlob, false, t.height)
-		hashing.RxHash(convertedBlob, t.seedHash, t.height, uint(m.maxConcurrency))
+		hashBytes = hashing.RxHash(convertedBlob, t.seedHash, t.height, uint(m.maxConcurrency))
 	}
 
 	if !s.config.BypassShareValidation && hex.EncodeToString(hashBytes) != result {

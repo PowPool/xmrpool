@@ -111,7 +111,7 @@ func (u *BlockUnlocker) unlockCandidates(candidates []*storage.BlockData) (*Unlo
 		// endian reverse
 		blockNonceHexTmp := ""
 		for i := 0; i < 4; i++ {
-			blockNonceHexTmp = blockNonceHex[i*2:i*2+1] + blockNonceHexTmp
+			blockNonceHexTmp = blockNonceHex[i*2:i*2+2] + blockNonceHexTmp
 		}
 		blockNonceHex = blockNonceHexTmp
 

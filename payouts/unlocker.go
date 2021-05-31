@@ -107,6 +107,14 @@ func (u *BlockUnlocker) unlockCandidates(candidates []*storage.BlockData) (*Unlo
 
 		// check block nonce
 		blockNonceHex := fmt.Sprintf("%08x", blockHeaderReply.BlockHeader.Nonce)
+
+		// endian reverse
+		blockNonceHexTmp := ""
+		for i := 0; i < 4; i++ {
+			blockNonceHexTmp = blockNonceHex[i*2:i*2+1] + blockNonceHexTmp
+		}
+		blockNonceHex = blockNonceHexTmp
+
 		if len(candidate.Nonce) > 0 && strings.EqualFold(candidate.Nonce, blockNonceHex) {
 			// check block reward
 			totalReward := big.NewInt(0).Add(candidate.CoinBaseValue, candidate.BlkTotalFee).Int64()

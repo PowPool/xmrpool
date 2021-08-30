@@ -35,6 +35,9 @@ type BlockUnlocker struct {
 	rpc      *rpc.RPCClient
 	halt     bool
 	lastFail error
+
+	// halt recover counter
+	counter uint64
 }
 
 func NewBlockUnlocker(cfg *pool.UnlockerConfig, backend *storage.RedisClient) *BlockUnlocker {
@@ -60,6 +63,8 @@ func NewBlockUnlocker(cfg *pool.UnlockerConfig, backend *storage.RedisClient) *B
 	})
 
 	u.rpc = rpcClient
+	u.counter = 0
+
 	return u
 }
 
@@ -165,9 +170,19 @@ func (u *BlockUnlocker) handleBlock(blockHeader rpc.BlockHeader, candidate *stor
 
 func (u *BlockUnlocker) unlockPendingBlocks() {
 	if u.halt {
+		if u.counter%3 == 0 {
+			u.halt = false
+			u.lastFail = nil
+			Info.Println("Unlocking suspending recovered temporarily")
+			goto SKIP1
+		} else {
+			u.counter = u.counter + 1
+		}
 		Info.Println("Unlocking suspended due to last critical error:", u.lastFail)
 		return
 	}
+
+SKIP1:
 
 	blockCountReply, err := u.rpc.GetBlockCount()
 	if err != nil {
@@ -256,9 +271,19 @@ func (u *BlockUnlocker) unlockPendingBlocks() {
 
 func (u *BlockUnlocker) unlockAndCreditMiners() {
 	if u.halt {
+		if u.counter%3 == 0 {
+			u.halt = false
+			u.lastFail = nil
+			Info.Println("Unlocking suspending recovered temporarily")
+			goto SKIP2
+		} else {
+			u.counter = u.counter + 1
+		}
 		Info.Println("Unlocking suspended due to last critical error:", u.lastFail)
 		return
 	}
+
+SKIP2:
 
 	blockCountReply, err := u.rpc.GetBlockCount()
 	if err != nil {

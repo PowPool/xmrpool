@@ -51,7 +51,12 @@ func startStratum() {
 	if cfg.Frontend.Enabled {
 		go startFrontend(&cfg, s)
 	}
-	s.Listen()
+
+	if cfg.Tls.Enabled {
+		s.ListenTLS()
+	} else {
+		s.Listen()
+	}
 }
 
 func startFrontend(cfg *pool.Config, s *stratum.StratumServer) {

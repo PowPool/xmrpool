@@ -41,6 +41,7 @@ type Config struct {
 	BypassShareValidation   bool       `json:"bypassShareValidation"`
 	Log                     Log        `json:"log"`
 	Stratum                 Stratum    `json:"stratum"`
+	Tls            			Tls        `json:"tls"`
 	BlockRefreshInterval    string     `json:"blockRefreshInterval"`
 	UpstreamCheckInterval   string     `json:"upstreamCheckInterval"`
 	Upstream                []Upstream `json:"upstream"`
@@ -71,6 +72,12 @@ type Config struct {
 type Stratum struct {
 	Timeout string `json:"timeout"`
 	Ports   []Port `json:"listen"`
+}
+
+type Tls struct {
+	Enabled   bool   `json:"enabled"`
+	TlsCert   string `json:"tlsCert"`
+	TlsKey    string `json:"tlsKey"`
 }
 
 type Port struct {

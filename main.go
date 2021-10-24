@@ -191,7 +191,7 @@ func main() {
 	InitLog(iLogFile, eLogFile, sLogFile, bLogFile, cfg.Log.LogSetLevel)
 
 	// set rlimit nofile value
-	SetRLimit(100000)
+	SetRLimit(800000)
 
 	secPassBytes, err := readSecurityPass()
 	if err != nil {

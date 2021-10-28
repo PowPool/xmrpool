@@ -34,6 +34,12 @@
 		]
 	},
 
+	"tls": {
+		"enabled": true,
+		"tlsCert": "certs/server.pem",
+		"tlsKey": "certs/server.key"
+	},
+
 	"frontend": {
 		"enabled": false,
 		"listen": "0.0.0.0:8082",

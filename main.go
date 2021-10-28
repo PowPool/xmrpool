@@ -51,7 +51,12 @@ func startStratum() {
 	if cfg.Frontend.Enabled {
 		go startFrontend(&cfg, s)
 	}
-	s.Listen()
+
+	if cfg.Tls.Enabled {
+		s.ListenTLS()
+	} else {
+		s.Listen()
+	}
 }
 
 func startFrontend(cfg *pool.Config, s *stratum.StratumServer) {
@@ -186,7 +191,7 @@ func main() {
 	InitLog(iLogFile, eLogFile, sLogFile, bLogFile, cfg.Log.LogSetLevel)
 
 	// set rlimit nofile value
-	SetRLimit(100000)
+	SetRLimit(800000)
 
 	secPassBytes, err := readSecurityPass()
 	if err != nil {

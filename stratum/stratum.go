@@ -3,6 +3,8 @@ package stratum
 import (
 	"bufio"
 	"crypto/rand"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"github.com/MiningPool0826/xmrpool/storage"
@@ -64,7 +66,10 @@ type Endpoint struct {
 type Session struct {
 	lastBlockHeight int64
 	sync.Mutex
+
 	conn *net.TCPConn
+	tlsConn *tls.Conn
+
 	enc  *json.Encoder
 	ip   string
 
@@ -220,6 +225,17 @@ func (s *StratumServer) Listen() {
 	<-quit
 }
 
+func (s *StratumServer) ListenTLS() {
+	quit := make(chan bool)
+	for _, port := range s.config.Stratum.Ports {
+		go func(cfg pool.Port, t pool.Tls) {
+			e := NewEndpoint(&cfg)
+			e.ListenTLS(s, t)
+		}(port, s.config.Tls)
+	}
+	<-quit
+}
+
 func (e *Endpoint) Listen(s *StratumServer) {
 	bindAddr := fmt.Sprintf("%s:%d", e.config.Host, e.config.Port)
 	addr, err := net.ResolveTCPAddr("tcp", bindAddr)
@@ -249,6 +265,61 @@ func (e *Endpoint) Listen(s *StratumServer) {
 		accept <- n
 		go func() {
 			s.handleClient(cs, e)
+			<-accept
+		}()
+	}
+}
+
+func (e *Endpoint) ListenTLS(s *StratumServer, t pool.Tls) {
+	bindAddr := fmt.Sprintf("%s:%d", e.config.Host, e.config.Port)
+
+	cert, err := tls.LoadX509KeyPair(t.TlsCert, t.TlsKey)
+	if err != nil {
+		Error.Fatalf("Error: %v", err)
+	}
+
+	tlsConfig := &tls.Config{}
+	tlsConfig.Certificates = []tls.Certificate{cert}
+	tlsConfig.Time = time.Now
+	tlsConfig.Rand = rand.Reader
+
+	server, err := tls.Listen("tcp", bindAddr, tlsConfig)
+	if err != nil {
+		Error.Fatalf("Error: %v", err)
+	}
+	defer server.Close()
+
+	Info.Printf("Stratum TLS listening on %s", bindAddr)
+	accept := make(chan int, e.config.MaxConn)
+	n := 0
+
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			continue
+		}
+		Info.Printf("Accept Stratum TLS Connection from: %s, to: %s", conn.RemoteAddr().String(), conn.LocalAddr().String())
+
+		ip, _, _ := net.SplitHostPort(conn.RemoteAddr().String())
+
+		tlsConn, ok := conn.(*tls.Conn)
+		if ok {
+			state := tlsConn.ConnectionState()
+			for _, v := range state.PeerCertificates {
+				pKIXPublicKey, _ := x509.MarshalPKIXPublicKey(v.PublicKey)
+				Info.Printf("x509.MarshalPKIXPublicKey: %v", pKIXPublicKey)
+			}
+		} else {
+			_ = conn.Close()
+			continue
+		}
+
+		cs := &Session{tlsConn: tlsConn, ip: ip, enc: json.NewEncoder(conn), endpoint: e}
+		n += 1
+
+		accept <- n
+		go func() {
+			s.handleTLSClient(cs, e)
 			<-accept
 		}()
 	}
@@ -294,6 +365,48 @@ func (s *StratumServer) handleClient(cs *Session, e *Endpoint) {
 	}
 	s.removeSession(cs)
 	_ = cs.conn.Close()
+}
+
+func (s *StratumServer) handleTLSClient(cs *Session, e *Endpoint) {
+	connbuff := bufio.NewReaderSize(cs.tlsConn, MaxReqSize)
+	s.setTLSDeadline(cs.tlsConn)
+
+	for {
+		data, isPrefix, err := connbuff.ReadLine()
+		if isPrefix {
+			Info.Println("Socket flood detected from", cs.ip)
+			break
+		} else if err == io.EOF {
+			if cs.login == "" && cs.id == "" {
+				Info.Println("Client disconnected from", cs.ip)
+			} else {
+				Info.Printf("Client disconnected: Address: [%s] | Name: [%s] | IP: [%s]", cs.login, cs.id, cs.ip)
+			}
+			break
+		} else if err != nil {
+			Error.Printf("Error reading from socket: %v | Address: [%s] | Name: [%s] | IP: [%s]", err, cs.login, cs.id, cs.ip)
+			break
+		}
+
+		// NOTICE: cpuminer-multi sends junk newlines, so we demand at least 1 byte for decode
+		// NOTICE: Ns*CNMiner.exe will send malformed JSON on very low diff, not sure we should handle this
+		if len(data) > 1 {
+			var req JSONRpcReq
+			err = json.Unmarshal(data, &req)
+			if err != nil {
+				Error.Printf("Malformed request from %s: %v", cs.ip, err)
+				break
+			}
+			s.setTLSDeadline(cs.tlsConn)
+			err = cs.handleMessage(s, e, &req)
+			if err != nil {
+				Error.Printf("handleTCPMessage: %v", err)
+				break
+			}
+		}
+	}
+	s.removeSession(cs)
+	_ = cs.tlsConn.Close()
 }
 
 func (cs *Session) handleMessage(s *StratumServer, e *Endpoint, req *JSONRpcReq) error {
@@ -383,6 +496,10 @@ func (cs *Session) sendError(id *json.RawMessage, reply *ErrorReply, drop bool) 
 }
 
 func (s *StratumServer) setDeadline(conn *net.TCPConn) {
+	_ = conn.SetDeadline(time.Now().Add(s.timeout))
+}
+
+func (s *StratumServer) setTLSDeadline(conn *tls.Conn) {
 	_ = conn.SetDeadline(time.Now().Add(s.timeout))
 }
 

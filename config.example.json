@@ -22,8 +22,9 @@
 	},
 
 	"stratum": {
-		"timeout": "15m",
+		"enabled": true,
 
+		"timeout": "15m",
 		"listen": [
 			{
 				"host": "0.0.0.0",
@@ -34,8 +35,19 @@
 		]
 	},
 
-	"tls": {
+	"stratumTls": {
 		"enabled": true,
+
+		"timeout": "15m",
+		"listen": [
+			{
+				"host": "0.0.0.0",
+				"port": 13003,
+				"diff": 300000,
+				"maxConn": 50000
+			}
+		],
+
 		"tlsCert": "certs/server.pem",
 		"tlsKey": "certs/server.key"
 	},

@@ -67,11 +67,11 @@ type Session struct {
 	lastBlockHeight int64
 	sync.Mutex
 
-	conn *net.TCPConn
+	conn    *net.TCPConn
 	tlsConn *tls.Conn
 
-	enc  *json.Encoder
-	ip   string
+	enc *json.Encoder
+	ip  string
 
 	login string
 	id    string
@@ -227,11 +227,11 @@ func (s *StratumServer) Listen() {
 
 func (s *StratumServer) ListenTLS() {
 	quit := make(chan bool)
-	for _, port := range s.config.Stratum.Ports {
-		go func(cfg pool.Port, t pool.Tls) {
+	for _, portTls := range s.config.StratumTls.Ports {
+		go func(cfg pool.Port, t pool.StratumTls) {
 			e := NewEndpoint(&cfg)
 			e.ListenTLS(s, t)
-		}(port, s.config.Tls)
+		}(portTls, s.config.StratumTls)
 	}
 	<-quit
 }
@@ -270,7 +270,7 @@ func (e *Endpoint) Listen(s *StratumServer) {
 	}
 }
 
-func (e *Endpoint) ListenTLS(s *StratumServer, t pool.Tls) {
+func (e *Endpoint) ListenTLS(s *StratumServer, t pool.StratumTls) {
 	bindAddr := fmt.Sprintf("%s:%d", e.config.Host, e.config.Port)
 
 	cert, err := tls.LoadX509KeyPair(t.TlsCert, t.TlsKey)

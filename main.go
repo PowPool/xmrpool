@@ -32,6 +32,7 @@ var (
 	LatestTagCommitSHA1 = ""
 	LatestCommitSHA1    = ""
 	BuildTime           = ""
+	ReleaseType         = ""
 )
 
 var cfg pool.Config
@@ -52,9 +53,11 @@ func startStratum() {
 		go startFrontend(&cfg, s)
 	}
 
-	if cfg.Tls.Enabled {
+	if cfg.StratumTls.Enabled {
 		s.ListenTLS()
-	} else {
+	}
+
+	if cfg.Stratum.Enabled {
 		s.Listen()
 	}
 }
@@ -168,6 +171,7 @@ func OptionParse() {
 		fmt.Printf("Latest Tag Commit SHA1: %s\n", LatestTagCommitSHA1)
 		fmt.Printf("Latest Commit SHA1: %s\n", LatestCommitSHA1)
 		fmt.Printf("Build Time: %s\n", BuildTime)
+		fmt.Printf("Release Type: %s\n", ReleaseType)
 		os.Exit(0)
 	}
 }

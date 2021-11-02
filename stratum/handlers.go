@@ -127,9 +127,10 @@ func (s *StratumServer) broadcastNewJobs() {
 				Error.Printf("Job transmit error to %s: %v", cs.ip, err)
 				s.removeSession(cs)
 			} else {
-				if s.config.StratumTls.Enabled {
+				if cs.tlsConn != nil {
 					s.setTLSDeadline(cs.tlsConn)
-				} else {
+				}
+				if cs.conn != nil {
 					s.setDeadline(cs.conn)
 				}
 			}

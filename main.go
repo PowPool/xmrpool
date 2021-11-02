@@ -60,6 +60,9 @@ func startStratum() {
 	if cfg.Stratum.Enabled {
 		s.Listen()
 	}
+
+	quit := make(chan bool)
+	<-quit
 }
 
 func startFrontend(cfg *pool.Config, s *stratum.StratumServer) {

@@ -215,25 +215,21 @@ func NewEndpoint(cfg *pool.Port) *Endpoint {
 }
 
 func (s *StratumServer) Listen() {
-	quit := make(chan bool)
 	for _, port := range s.config.Stratum.Ports {
 		go func(cfg pool.Port) {
 			e := NewEndpoint(&cfg)
 			e.Listen(s)
 		}(port)
 	}
-	<-quit
 }
 
 func (s *StratumServer) ListenTLS() {
-	quit := make(chan bool)
 	for _, portTls := range s.config.StratumTls.Ports {
 		go func(cfg pool.Port, t pool.StratumTls) {
 			e := NewEndpoint(&cfg)
 			e.ListenTLS(s, t)
 		}(portTls, s.config.StratumTls)
 	}
-	<-quit
 }
 
 func (e *Endpoint) Listen(s *StratumServer) {

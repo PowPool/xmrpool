@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/MiningPool0826/xmrpool/rpc"
-	"github.com/MiningPool0826/xmrpool/util"
+	"github.com/PowPool/xmrpool/rpc"
+	"github.com/PowPool/xmrpool/util"
 )
 
 func (s *StratumServer) StatsIndex(w http.ResponseWriter, r *http.Request) {

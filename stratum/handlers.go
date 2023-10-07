@@ -1,13 +1,13 @@
 package stratum
 
 import (
-	"github.com/MiningPool0826/xmrpool/cnutil"
+	"github.com/PowPool/xmrpool/cnutil"
 	"regexp"
 	"strings"
 	"sync/atomic"
 	"time"
 
-	. "github.com/MiningPool0826/xmrpool/util"
+	. "github.com/PowPool/xmrpool/util"
 )
 
 var noncePattern *regexp.Regexp

@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/MiningPool0826/xmrpool/pool"
+	"github.com/PowPool/xmrpool/pool"
 	"math/big"
 	"strconv"
 	"strings"
@@ -10,7 +10,7 @@ import (
 
 	"gopkg.in/redis.v3"
 
-	. "github.com/MiningPool0826/xmrpool/util"
+	. "github.com/PowPool/xmrpool/util"
 )
 
 type RedisClient struct {

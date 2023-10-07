@@ -7,7 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"github.com/MiningPool0826/xmrpool/storage"
+	"github.com/PowPool/xmrpool/storage"
 	"io"
 	"math/big"
 	"net"
@@ -15,10 +15,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/MiningPool0826/xmrpool/pool"
-	"github.com/MiningPool0826/xmrpool/rpc"
-	"github.com/MiningPool0826/xmrpool/util"
-	. "github.com/MiningPool0826/xmrpool/util"
+	"github.com/PowPool/xmrpool/pool"
+	"github.com/PowPool/xmrpool/rpc"
+	"github.com/PowPool/xmrpool/util"
+	. "github.com/PowPool/xmrpool/util"
 )
 
 type StratumServer struct {

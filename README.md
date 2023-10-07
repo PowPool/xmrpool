@@ -2,8 +2,6 @@
 
 High performance CryptoNote mining stratum with Web-interface written in Golang.
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/MiningPool0826/xmrpool)](https://goreportcard.com/report/github.com/MiningPool0826/xmrpool)
-[![CircleCI](https://circleci.com/gh/MiningPool0826/xmrpool.svg?style=svg)](https://circleci.com/gh/MiningPool0826/xmrpool)
 
 **Stratum feature list:**
 
@@ -15,7 +13,6 @@ High performance CryptoNote mining stratum with Web-interface written in Golang.
 * Concurrent shares processing
 * Beautiful Web-interface
 
-![](screenshot.png)
 
 ## Installation
 
@@ -57,7 +54,7 @@ Install Golang and required packages:
 
 Clone:
 
-    git clone https://github.com/MiningPool0826/xmrpool.git
+    git clone https://github.com/PowPool/xmrpool.git
     cd xmrpool
 
 Build stratum:
@@ -85,7 +82,7 @@ Install Golang and required packages:
 
 Clone stratum:
 
-    git clone https://github.com/MiningPool0826/xmrpool.git
+    git clone https://github.com/PowPool/xmrpool.git
     cd xmrpool
 
 Build stratum:
@@ -169,13 +166,6 @@ Configuration is self-describing, just copy *config.example.json* to *config.jso
 
 You must use `anything.WorkerID` as username in your miner. Either disable address validation or use `<address>.WorkerID` as username. If there is no workerID specified your rig stats will be merged under `0` worker. If mining software contains dev fee rounds its stats will usually appear under `0` worker. This stratum acts like your own pool, the only exception is that you will get rewarded only after block found, shares only used for stats.
 
-### Donations
-
-**XMR**: `47v4BWeUPFrM9YkYRYk2pkS9CubAPEc7BJjNjg4FvF66Y2oVrTAaBjDZhmFzAXgqCNRvBH2gupQ2gNag2FkP983ZMptvUWG`
-
-![](https://cdn.pbrd.co/images/GP5tI1D.png)
-
-Highly appreciated.
 
 ### License
 

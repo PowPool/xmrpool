@@ -3,8 +3,8 @@ package payouts
 import (
 	"errors"
 	"fmt"
-	"github.com/MiningPool0826/xmrpool/cnutil"
-	"github.com/MiningPool0826/xmrpool/pool"
+	"github.com/PowPool/xmrpool/cnutil"
+	"github.com/PowPool/xmrpool/pool"
 	"math/big"
 	"net/http"
 	"net/url"
@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MiningPool0826/xmrpool/rpc"
-	"github.com/MiningPool0826/xmrpool/storage"
-	. "github.com/MiningPool0826/xmrpool/util"
+	"github.com/PowPool/xmrpool/rpc"
+	"github.com/PowPool/xmrpool/storage"
+	. "github.com/PowPool/xmrpool/util"
 )
 
 //const minDepth = 16

@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/MiningPool0826/xmrpool/pool"
+	"github.com/PowPool/xmrpool/pool"
 )
 
 type RPCClient struct {

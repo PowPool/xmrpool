@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	"github.com/MiningPool0826/xmrpool/blocktemplate"
+	"github.com/PowPool/xmrpool/blocktemplate"
 	"io"
 	"math/big"
 
-	"github.com/MiningPool0826/xmrpool/cnutil"
-	. "github.com/MiningPool0826/xmrpool/util"
+	"github.com/PowPool/xmrpool/cnutil"
+	. "github.com/PowPool/xmrpool/util"
 )
 
 type BlockTemplate struct {

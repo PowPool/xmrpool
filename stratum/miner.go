@@ -9,10 +9,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/MiningPool0826/xmrpool/cnutil"
-	"github.com/MiningPool0826/xmrpool/hashing"
-	"github.com/MiningPool0826/xmrpool/util"
-	. "github.com/MiningPool0826/xmrpool/util"
+	"github.com/PowPool/xmrpool/cnutil"
+	"github.com/PowPool/xmrpool/hashing"
+	"github.com/PowPool/xmrpool/util"
+	. "github.com/PowPool/xmrpool/util"
 )
 
 type Job struct {

@@ -1,4 +1,4 @@
-module github.com/MiningPool0826/xmrpool
+module github.com/PowPool/xmrpool
 
 go 1.14
 

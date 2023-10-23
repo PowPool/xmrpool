@@ -20,7 +20,7 @@ Dependencies:
 
   * go-1.15
   * Everything required to build Monero
-  * Monero >= **v0.18.0.0** (sometimes `master` branch required)
+  * Monero >= **v0.18.3.1** (sometimes `master` branch required)
 
 ### Linux
 
@@ -28,20 +28,20 @@ Use Ubuntu 16.04 LTS.
 
     sudo apt-get install libssl-dev
     sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev libzmq5-dev
-    sudo apt-get install liblmdb-dev libevent-dev libjson-c-dev uuid-dev
+    sudo apt-get install liblmdb-dev libevent-dev libjson-c-dev uuid-dev libunbound-dev
 
 Use Ubuntu 18.04 LTS.
 
     sudo apt-get install libssl1.0-dev
     sudo apt-get install git cmake build-essential pkg-config libboost-all-dev libreadline-dev doxygen libsodium-dev libzmq5-dev 
-    sudo apt-get install liblmdb-dev libevent-dev libjson-c-dev uuid-dev
+    sudo apt-get install liblmdb-dev libevent-dev libjson-c-dev uuid-dev libunbound-dev
 
 
 Compile Monero source (with shared libraries option):
 
     git clone --recursive https://github.com/monero-project/monero.git
     cd monero
-    git checkout tags/v0.18.0.0 -b v0.18.0.0
+    git checkout tags/v0.18.3.1 -b v0.18.3.1
     cmake -DBUILD_SHARED_LIBS=1 -DMANUAL_SUBMODULES=1 .
     make
 
@@ -72,7 +72,7 @@ Compile Monero source:
 
     git clone --recursive https://github.com/monero-project/monero.git
     cd monero
-    git checkout tags/v0.18.0.0 -b v0.18.0.0
+    git checkout tags/v0.18.3.1 -b v0.18.3.1
     cmake .
     make
 

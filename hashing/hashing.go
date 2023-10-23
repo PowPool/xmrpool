@@ -22,12 +22,21 @@ func FastHash(blob []byte) []byte {
 	return Hash(append([]byte{byte(len(blob))}, blob...), true, 0)
 }
 
-func RxHash(blob []byte, seedHash []byte, height int64, maxConcurrency uint) []byte {
-	output := make([]byte, 32)
-	seedHeight := C.randomx_seedheight((C.uint64_t)(height))
+//func RxHash(blob []byte, seedHash []byte, height int64, maxConcurrency uint) []byte {
+//	output := make([]byte, 32)
+//	seedHeight := C.randomx_seedheight((C.uint64_t)(height))
+//
+//	C.randomx_slow_hash((C.uint64_t)(height), (C.uint64_t)(seedHeight), (*C.char)(unsafe.Pointer(&seedHash[0])),
+//		(*C.char)(unsafe.Pointer(&blob[0])), (C.uint32_t)(len(blob)), (*C.char)(unsafe.Pointer(&output[0])),
+//		(C.uint32_t)(maxConcurrency), (C.uint32_t)(0))
+//	return output
+//}
 
-	C.randomx_slow_hash((C.uint64_t)(height), (C.uint64_t)(seedHeight), (*C.char)(unsafe.Pointer(&seedHash[0])),
-		(*C.char)(unsafe.Pointer(&blob[0])), (C.uint32_t)(len(blob)), (*C.char)(unsafe.Pointer(&output[0])),
-		(C.uint32_t)(maxConcurrency), (C.uint32_t)(0))
+func RxHash(blob []byte, seedHash []byte) []byte {
+	output := make([]byte, 32)
+
+	C.randomx_slow_hash((*C.char)(unsafe.Pointer(&seedHash[0])),
+		(*C.char)(unsafe.Pointer(&blob[0])), (C.uint32_t)(len(blob)),
+		(*C.char)(unsafe.Pointer(&output[0])))
 	return output
 }

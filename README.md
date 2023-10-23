@@ -18,7 +18,7 @@ High performance CryptoNote mining stratum with Web-interface written in Golang.
 
 Dependencies:
 
-  * go-1.15
+  * go-1.17
   * Everything required to build Monero
   * Monero >= **v0.18.3.1** (sometimes `master` branch required)
 
@@ -88,6 +88,7 @@ Clone stratum:
 Build stratum:
 
     MONERO_DIR=[path_of_monero]  
+    go mod tidy -compat="1.17"
     cmake .
     make
     make -f Makefile_build_info

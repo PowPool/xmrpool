@@ -97,6 +97,19 @@ Build stratum:
 
     ./build/bin/xmrpool config.json
 
+* About `Security Password`:
+
+We use `Security Password` to prevent our important configuration information from being viewed or modified.
+So we encrypt some important configurations in config.json.
+
+    addressEncrypted
+    redis.passwordEncrypted or redisFailover.passwordEncrypted
+
+* How to encrypt/decrypt
+
+Use function `TestAe64Encode` and `TestAe64Decode` from model `util` in this project.
+
+
 If you need to bind to privileged ports and don't want to run from `root`:
 
     sudo apt-get install libcap2-bin
@@ -106,66 +119,142 @@ If you need to bind to privileged ports and don't want to run from `root`:
 
 Configuration is self-describing, just copy *config.example.json* to *config.json* and run stratum with path to config file as 1st argument.
 
-```javascript
+```json
 {
-  // Address for block rewards
-  "address": "YOUR-ADDRESS-NOT-EXCHANGE",
-  // Don't validate address
-  "bypassAddressValidation": true,
-  // Don't validate shares
-  "bypassShareValidation": true,
+	// Address for block rewards
+	"addressEncrypted": "xePkFW8E5OhMuFg/FyQQqCFs2awuArs/QGEAyJcZ8X4mBV6FM+k1vER2WW6lMSUd1cP/ggTXR8j+43qVa+bNijZMdZyrohoT/7rNUj/toDFGVxzDTDtrRvVs9LbRGtIx",
+	// Don't validate address
+	"bypassAddressValidation": false,
+	// Don't validate shares
+	"bypassShareValidation": false,
 
-  "threads": 2,
+	"threads": 16,
+	"coin": "xmr",
 
-  "estimationWindow": "15m",
-  "luckWindow": "24h",
-  "largeLuckWindow": "72h",
+	"estimationWindow": "15m",
+	"luckWindow": "24h",
+	"largeLuckWindow": "72h",
 
-  // Interval to poll daemon for new jobs
-  "blockRefreshInterval": "1s",
+	// Interval to poll daemon for new jobs
+	"blockRefreshInterval": "1s",
+	"hashRateExpiration": "3h",
 
-  "stratum": {
-    // Socket timeout
-    "timeout": "15m",
+	"purgeInterval": "10m",
+	"hashrateWindow": "30m",
+	"hashrateLargeWindow": "3h",
 
-    "listen": [
-      {
-        "host": "0.0.0.0",
-        "port": 1111,
-        "diff": 5000,
-        "maxConn": 32768
-      },
-      {
-        "host": "0.0.0.0",
-        "port": 3333,
-        "diff": 10000,
-        "maxConn": 32768
-      }
-    ]
-  },
+	"log": {
+		"logSetLevel": 10
+	},
 
-  "frontend": {
-    "enabled": true,
-    "listen": "0.0.0.0:8082",
-    "login": "admin",
-    "password": "",
-    "hideIP": false
-  },
+	"stratum": {
+		"enabled": true,
+		// Socket timeout
+		"timeout": "15m",
+		"listen": [
+			{
+				"host": "0.0.0.0",
+				"port": 3003,
+				"diff": 300000,
+				"maxConn": 50000
+			}
+		]
+	},
 
-  "upstreamCheckInterval": "5s",
+	"stratumTls": {
+		"enabled": false,
+		// Socket timeout
+		"timeout": "15m",
+		"listen": [
+			{
+				"host": "0.0.0.0",
+				"port": 13003,
+				"diff": 300000,
+				"maxConn": 50000
+			}
+		],
 
-  "upstream": [
-    {
-      "name": "Main",
-      "host": "127.0.0.1",
-      "port": 18081,
-      "timeout": "10s"
-    }
-  ]
+		"tlsCert": "certs/server.pem",
+		"tlsKey": "certs/server.key"
+	},
+
+	"frontend": {
+		"enabled": false,
+		"listen": "0.0.0.0:8082",
+		"login": "admin",
+		"password": "",
+		"hideIP": false
+	},
+
+	"upstreamCheckInterval": "5s",
+	// upstream to monerod rpc-api, multiple monerod supported
+	"upstream": [
+		{
+			"name": "Main",
+			"host": "192.168.33.166",
+			"port": 18081,
+			"timeout": "3s"
+		},
+		{
+			"name": "Backup1",
+			"host": "192.168.26.83",
+			"port": 18081,
+			"timeout": "3s"
+		},
+		{
+			"name": "Backup2",
+			"host": "192.168.33.243",
+			"port": 18081,
+			"timeout": "3s"
+		}
+	],
+	// redis single node mode
+	"redis": {
+		"enabled": true,
+		"endpoint": "127.0.0.1:6379",
+		"poolSize": 10,
+		"database": 0,
+		"passwordEncrypted": "oXyI5OTy+nRTshESi80X8KKSjDiLksuw1mhwRg2z0Ic="
+	},
+	// redis failover mode
+	"redisFailover": {
+		"enabled": false,
+		"masterName": "mymaster",
+		"sentinelEndpoints": ["192.168.33.166:26379", "192.168.26.83:26379", "192.168.33.243:26379"],
+		"poolSize": 10,
+		"database": 0,
+		"passwordEncrypted": "oXyI5OTy+nRTshESi80X8KKSjDiLksuw1mhwRg2z0Ic="
+	},
+
+	"unlocker": {
+		"enabled": true,
+		"poolFee": 1.0,
+		"poolFeeAddress": "",
+		"donate": false,
+		"depth": 6,
+		"immatureDepth": 3,
+		"keepTxFees": false,
+		"interval": "10m",
+		"daemonName": "unlocker",
+		"daemonHost": "192.168.33.166",
+		"daemonPort": 18081,
+		"timeout": "10s"
+	},
+
+	"newrelicEnabled": false,
+	"newrelicName": "MyStratum",
+	"newrelicKey": "SECRET_KEY",
+	"newrelicVerbose": false
 }
 ```
 
 You must use `anything.WorkerID` as username in your miner. Either disable address validation or use `<address>.WorkerID` as username. If there is no workerID specified your rig stats will be merged under `0` worker. If mining software contains dev fee rounds its stats will usually appear under `0` worker. This stratum acts like your own pool, the only exception is that you will get rewarded only after block found, shares only used for stats.
+
+
+### Mining tools
+
+* [xmrig](https://github.com/xmrig/xmrig)
+* [xmr-stak](https://github.com/fireice-uk/xmr-stak)
 
 
 ### License

@@ -24,8 +24,9 @@ func (t *TxInGen) UnPack(reader io.Reader) error {
 }
 
 type TxOutGen struct {
-	Amount uint64
-	PubKey CryptoPubKey
+	Amount  uint64
+	PubKey  CryptoPubKey
+	ViewTag byte
 }
 
 func (t TxOutGen) Pack(writer io.Writer) error {
@@ -34,6 +35,10 @@ func (t TxOutGen) Pack(writer io.Writer) error {
 		return err
 	}
 	err = t.PubKey.Pack(writer)
+	if err != nil {
+		return err
+	}
+	_, err = writer.Write([]byte{t.ViewTag})
 	if err != nil {
 		return err
 	}
@@ -50,6 +55,12 @@ func (t *TxOutGen) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
+	s := make([]byte, 1)
+	_, err = reader.Read(s[0:1])
+	if err != nil {
+		return err
+	}
+	t.ViewTag = s[0]
 	return nil
 }
 

@@ -3,7 +3,7 @@ module github.com/PowPool/xmrpool
 go 1.17
 
 require (
-	github.com/ethereum/go-ethereum v1.12.1
+	github.com/ethereum/go-ethereum v1.13.15
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/gorilla/mux v1.8.0
 	github.com/mutalisk999/bitcoin-lib v0.0.0-20201203080325-81caed73682f
